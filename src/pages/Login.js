@@ -13,6 +13,10 @@ import {
   MDBValidationItem
 }
 from 'mdb-react-ui-kit';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { login } from '../redux/features/authSlice';
+import { toast } from "react-toastify"
 
 const Login = () => {
 
@@ -27,6 +31,8 @@ const Login = () => {
   });
 
   const [isFormValid, setIsFormValid] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const onChange = (e) => {
     setFormValue({ ...formValue, [e.target.name]: e.target.value });
@@ -57,11 +63,14 @@ const Login = () => {
     return true;
   };
 
+  /* Submitting Form */
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (validateForm()) {
+    if (validateForm() && isFormValid) {
       console.log(formValue);
+      dispatch(login({formValue, navigate, toast }))
+      setFormValue({ email: '', password: ''})
     }
   };
 
