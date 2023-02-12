@@ -4,3 +4,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.cascading-right {
+  margin-left: -50px;
+}
+
+@media (max-width: 900px) {
+  .cascading-right {
+    margin-left: 0;
+  }
+}

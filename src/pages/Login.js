@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   MDBBtn,
   MDBContainer,
@@ -10,7 +10,8 @@ import {
   MDBInput,
   MDBCheckbox,
   MDBValidation,
-  MDBValidationItem
+  MDBValidationItem,
+  MDBSpinner
 }
 from 'mdb-react-ui-kit';
 import { useSelector, useDispatch } from 'react-redux';
@@ -34,9 +35,21 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const { error, loading } = useSelector( state => ({...state?.auth}));
+
   const onChange = (e) => {
+    if(formValue.email) {
+      setValidationError({...validationError, emailError: ''});
+    }
+    if(formValue.password) {
+      setValidationError({...validationError, passwordError: ''});
+    }
     setFormValue({ ...formValue, [e.target.name]: e.target.value });
   };
+
+  useEffect(() => {
+    error && toast.error(error);
+  }, [error]);
 
   const validateForm = () => {
     let emailError = '';
@@ -67,7 +80,7 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (validateForm() && isFormValid) {
+    if (validateForm()) {
       console.log(formValue);
       dispatch(login({formValue, navigate, toast }))
       setFormValue({ email: '', password: ''})
@@ -88,6 +101,9 @@ const Login = () => {
 
             <MDBCardBody>
 
+            <h2 className="fw-bold mb-5 text-center">Signin now</h2>
+
+
               <form onSubmit={handleSubmit}>
                 <MDBValidation>
                   <MDBValidationItem invalid="Please enter email">
@@ -100,7 +116,6 @@ const Login = () => {
                       required
                       name='email'
                       onChange={onChange}
-                      invalid={!formValue.emailValid}
                       feedback='Please enter a valid email address'
                   />
                     <p className='error-message text-danger'>{validationError.emailError}</p>
@@ -116,7 +131,6 @@ const Login = () => {
                       name='password'
                       required
                       onChange={onChange}
-                      invalid={!formValue.passwordValid}
                       feedback='Password must be at least 8 characters long'
                       autoComplete='off'
                     />
@@ -124,7 +138,10 @@ const Login = () => {
                   </MDBValidationItem>
                 </MDBValidation>
 
-                <MDBBtn className="mb-4 w-100" type='submit'>Sign in</MDBBtn>
+                <MDBBtn className="mb-4 w-100" type='submit'>
+                  { loading && <MDBSpinner style={{ width: '17px', height: '17px'}} role='status' size="sm" color="info" tag="span" className="me-2" /> }
+                  Sign in
+                </MDBBtn>
               </form>
 
 
