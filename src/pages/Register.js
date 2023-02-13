@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   MDBBtn,
   MDBContainer,
@@ -9,12 +9,14 @@ import {
   MDBRow,
   MDBCol,
   MDBValidation,
-  MDBValidationItem
+  MDBValidationItem,
+  MDBCardFooter
 }
 from 'mdb-react-ui-kit';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from "react-toastify"
+import { register } from '../redux/features/authSlice';
 
 
 function Register() {
@@ -24,28 +26,66 @@ function Register() {
     lastName: '',
     email: '',
     password: '',
+    confirmPassword: ''
   });
   
   const [validationError, setValidationError] = useState({
-    emailError: '',
-    passwordError: '',
     firstNameError : '',
     lastNameError: '',
+    emailError: '',
+    passwordError: '',
+    confirmPasswordError: '',
   });
 
-  const [isFormValid, setIsFormValid] = useState(false);
+  const submitButtonRef = useRef(null);
+
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { error, loading } = useSelector( state => ({...state?.auth}));
+
+
 
   const onChange = (e) => {
+
+    if(formValue.firstName) {
+      setValidationError({...validationError, firstNameError: ''});
+    }
+    if(formValue.lastName) {
+      setValidationError({...validationError, lastNameError: ''});
+    }
+    if(formValue.email) {
+      setValidationError({...validationError, emailError: ''});
+    }
+    if(formValue.password) {
+      setValidationError({...validationError, passwordError: ''});
+    }
+    if(formValue.confirmPassword) {
+      setValidationError({...validationError, confirmPasswordError: ''});
+    }
+
     setFormValue({ ...formValue, [e.target.name]: e.target.value });
   };
 
+  useEffect(() => {
+    error && toast.error(error);
+  }, [error]); 
+
+  /* Form validation */
   const validateForm = () => {
-    let emailError = '';
-    let passwordError = '';
     let firstNameError = '';
     let lastNameError = '';
+    let emailError = '';
+    let passwordError = '';
+    let confirmPasswordError = '';
+
+    if (!formValue.firstName) {
+      firstNameError = 'Please enter your first name';
+    }
+
+    if (!formValue.lastName) {
+      lastNameError = 'Please enter your last name';
+    }
 
     if (!formValue.email) {
       emailError = 'Please enter email address';
@@ -57,23 +97,21 @@ function Register() {
       passwordError = 'Please enter password';
     }
 
-
-    if (!formValue.firstName) {
-      firstNameError = 'Please enter your first name';
+    if (!formValue.confirmPassword) {
+      confirmPasswordError = 'Please enter confirm password';
     }
 
-    if (!formValue.lastName) {
-      lastNameError = 'Please enter your last name';
+    if(formValue.password !== formValue.confirmPassword) {
+      confirmPasswordError = 'Password does not match';
     }
 
-    if (emailError || passwordError || firstNameError || lastNameError) {
-      setValidationError({ emailError, passwordError, firstNameError, lastNameError });
-      setIsFormValid(false);
+
+    if (emailError || passwordError || firstNameError || lastNameError || confirmPasswordError) {
+      setValidationError({ emailError, passwordError, firstNameError, lastNameError, confirmPasswordError });
       return false;
     }
 
-    setIsFormValid(true);
-    setValidationError({ emailError: '', passwordError: '', firstNameError: '', lastNameError: '' });
+    setValidationError({ emailError: '', passwordError: '', firstNameError: '', lastNameError: '', confirmPasswordError: '' });
     return true;
   };
 
@@ -82,10 +120,17 @@ function Register() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (validateForm() && isFormValid) {
+    if (validateForm()) {
       console.log(formValue);
-      // dispatch(login({formValue, navigate, toast }))
-      setFormValue({ email: '', password: '', firstName: '', lastName: ''})
+      dispatch(register({formValue, navigate, toast }))
+      setFormValue({ email: '', password: '', firstName: '', lastName: '', confirmPassword: ''})
+    }
+  };
+
+   /* Detect Enter key */
+   const handleKeyDown = event => {
+    if (event.key === "Enter") {
+      submitButtonRef.current.click();
     }
   };
 
@@ -111,18 +156,13 @@ function Register() {
                 <MDBValidation>
                   <MDBRow>
                     <MDBCol col='6'>
-                      {/* <MDBInput 
-                        wrapperClass='mb-4' 
-                        label='First name' 
-                        id='form1' 
-                        type='text'
-                      /> */}
                       <MDBValidationItem>
                         <MDBInput
                           value={formValue.firstName}
                           name='firstName'
                           wrapperClass=''
                           onChange={onChange}
+                          onKeyDown={handleKeyDown}
                           id='validationCustom01'
                           required
                           label='First name'
@@ -132,18 +172,13 @@ function Register() {
                     </MDBCol>
 
                     <MDBCol col='6'>
-                      {/* <MDBInput 
-                        wrapperClass='mb-4' 
-                        label='Last name' 
-                        id='form2' 
-                        type='text'
-                      /> */}
                       <MDBValidationItem>
                         <MDBInput
                           value={formValue.lastName}
                           wrapperClass=''
                           name='lastName'
                           onChange={onChange}
+                          onKeyDown={handleKeyDown}
                           id='validationCustom02'
                           required
                           label='Last name'
@@ -153,12 +188,6 @@ function Register() {
                     </MDBCol>
                   </MDBRow>
 
-                  {/* <MDBInput 
-                    wrapperClass='mb-4' 
-                    label='Email' 
-                    id='form3' 
-                    type='email'
-                  /> */}
                   <MDBValidationItem invalid="Please enter email">
                     <MDBInput
                       value={formValue.email}
@@ -169,18 +198,12 @@ function Register() {
                       required
                       name='email'
                       onChange={onChange}
+                      onKeyDown={handleKeyDown}
                       feedback='Please enter a valid email address'
                   />
                     <p className='error-message text-danger'>{validationError.emailError}</p>
                   </MDBValidationItem>
 
-
-                  {/* <MDBInput 
-                    wrapperClass='mb-4' 
-                    label='Password' 
-                    id='form4' 
-                    type='password'
-                  /> */}
                   <MDBValidationItem invalid="Please enter password">
                     <MDBInput
                       wrapperClass=''
@@ -191,39 +214,41 @@ function Register() {
                       name='password'
                       required
                       onChange={onChange}
-                      feedback='Password must be at least 8 characters long'
+                      onKeyDown={handleKeyDown}
                       autoComplete='off'
                     />
                     <p className='error-message text-danger'>{validationError.passwordError}</p>
                   </MDBValidationItem>
 
+                  <MDBValidationItem invalid="Please enter confirm password">
+                    <MDBInput
+                      wrapperClass=''
+                      label='Confirm Password'
+                      id='validationCustom05'
+                      type='password'
+                      value={formValue.confirmPassword}
+                      name='confirmPassword'
+                      required
+                      onChange={onChange}
+                      onKeyDown={handleKeyDown}
+                      autoComplete='off'
+                    />
+                    <p className='error-message text-danger'>{validationError.confirmPasswordError}</p>
+                  </MDBValidationItem>
+
                 </MDBValidation>
-                <MDBBtn className='w-100 mb-4' size='md' type='submit'>sign up</MDBBtn>
+                <MDBBtn ref={submitButtonRef} className='w-100 mb-4' size='md' type='submit'>sign up</MDBBtn>
               </form>
 
-              <div className="text-center">
-
-                <p>or sign up with:</p>
-
-                <MDBBtn tag='a' color='none' className='mx-3' style={{ color: '#1266f1' }}>
-                  <MDBIcon fab icon='facebook-f' size="sm"/>
-                </MDBBtn>
-
-                <MDBBtn tag='a' color='none' className='mx-3' style={{ color: '#1266f1' }}>
-                  <MDBIcon fab icon='twitter' size="sm"/>
-                </MDBBtn>
-
-                <MDBBtn tag='a' color='none' className='mx-3' style={{ color: '#1266f1' }}>
-                  <MDBIcon fab icon='google' size="sm"/>
-                </MDBBtn>
-
-                <MDBBtn tag='a' color='none' className='mx-3' style={{ color: '#1266f1' }}>
-                  <MDBIcon fab icon='github' size="sm"/>
-                </MDBBtn>
-
-              </div>
-
             </MDBCardBody>
+            <MDBCardFooter className='text-center'>
+              <p className='d-inline me-2'>
+                 Already have an account? 
+                </p>
+              <Link to="/login">
+                Log In
+              </Link>
+            </MDBCardFooter>
           </MDBCard>
         </MDBCol>
 
