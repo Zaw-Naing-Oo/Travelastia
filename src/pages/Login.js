@@ -17,7 +17,7 @@ import {
 from 'mdb-react-ui-kit';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { googleLogin, login } from '../redux/features/authSlice';
+import { googleLogin, login, setUser } from '../redux/features/authSlice';
 import { toast } from "react-toastify"
 import { GoogleLogin } from '@react-oauth/google';
 import  jwt_decode from 'jwt-decode'

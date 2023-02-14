@@ -6,12 +6,14 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import 'react-toastify/dist/ReactToastify.css';
+import { useSelector } from 'react-redux';
 
 const App = () => {
+
   return (
     <>
     <ToastContainer />
-      {/* <Navbar /> */}
+      <Navbar />
       <Routes>
         <Route path='/' element={ <Home /> } />
         <Route path='/login' element={ <Login /> } />
