@@ -18,7 +18,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import { Link, useNavigate } from "react-router-dom"
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/features/authSlice';
 
 
@@ -27,9 +27,8 @@ function Navbar() {
   const navigate = useNavigate();
   const disaptch = useDispatch();
 
-  const user = localStorage.getItem("profile");
-  console.log(user);
-
+  // console.log(useSelector(state => state));
+  const user = useSelector(state => state?.auth?.user);
 
 
   const handleCloseNavMenu = () => {
@@ -62,7 +61,7 @@ function Navbar() {
             <ListItemIcon>
               <InboxIcon /> 
             </ListItemIcon>
-            <ListItemText primary="Tour App" />
+            <ListItemText primary="Add Tour" />
           </ListItemButton>
           <ListItemButton>
             <ListItemIcon>
@@ -70,18 +69,22 @@ function Navbar() {
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
           </ListItemButton>
+          { user ? (
+          <ListItemButton onClick={() => disaptch(logout()) }>
+            <ListItemIcon>
+              <InboxIcon /> 
+            </ListItemIcon>
+            <ListItemText primary="Logout" />
+          </ListItemButton>
+          ) : (
           <ListItemButton onClick={ () => navigate("/login") }>
             <ListItemIcon>
               <InboxIcon /> 
             </ListItemIcon>
             <ListItemText primary="Login" />
           </ListItemButton>
-          <ListItemButton onClick={ () => navigate("/login") }>
-            <ListItemIcon>
-              <InboxIcon /> 
-            </ListItemIcon>
-            <ListItemText primary="Logout" />
-          </ListItemButton>
+
+          ) }
         </ListItem>
     </List>
   </Box>
@@ -149,11 +152,11 @@ function Navbar() {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
              <Link
-                to='/tourapp'
+                to='/tour/createTour'
                 onClick={handleCloseNavMenu}
                 className="text-white m-2"
               >
-                Tour App
+                Add Tour
               </Link>
               <Link
                 to='/dashboard'
@@ -167,10 +170,12 @@ function Navbar() {
 
 
           <Box sx={{ flexGrow: 0 }}>
-            { user ? (
+            { user?.result?._id ? (
               <Button
                 className="text-white m-2"
-                onClick={disaptch(logout())}
+                onClick={() => {
+                  disaptch(logout());
+                }}
               >
                 Logout
               </Button>
@@ -182,9 +187,9 @@ function Navbar() {
                 Login
               </Button>
             )}
-            <Tooltip title="Open settings">
+            <Tooltip title={user?.result?.name}>
               <IconButton sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar>{ user?.result?.name[0] }</Avatar>
               </IconButton>
             </Tooltip>
           </Box>
