@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useCallback, useEffect } from 'react'
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField';
@@ -7,76 +7,174 @@ import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import { MuiChipsInput } from 'mui-chips-input'
 import Dropzone from 'react-dropzone';
-import {useSelector} from "react-redux"
+import {useSelector, useDispatch} from "react-redux"
+import { createTour } from '../redux/features/tourSlice';
+import { useNavigate } from 'react-router-dom';
+import { toast } from "react-toastify"
 
-const AddTour = () => {
+  const AddTour = () => {
 
-  const [ tourData, setTourData ] = useState({ title: "", description: "", tags: [] });
-  const [tagErrMsg, setTagErrMsg] = useState(null);
+    const [ tourData, setTourData ] = useState({ title: "", description: "", tags: [] });
+    const [chips, setChips] = React.useState([]);
+    const submitButtonRef = useRef(null);
+    const [errors, setErrors] = useState({});
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-  const user = useSelector(state => state?.auth);
-  console.log(tourData);
-  console.log(tourData?.imageFile);
-  // console.log(user);
+    // For error message
+    const [validationError, setValidationError] = useState({
+      titleError: '',
+      descriptionError: '',
+      tagsError: '',
+    });
 
-  // const files = acceptedFiles.map(file => (
-  //   <li key={file.path}>
-  //     {file.path} - {file.size} bytes
-  //   </li>
-  // ));
+    // const [tagErrMsg, setTagErrMsg] = useState(null);
 
-  const handleChange = (e) => {
-    setTourData({...tourData, [e.target.name] : e.target.value });
+    const user = useSelector(state => state?.auth?.user);
+    const { error, loading } = useSelector( state => ({...state?.tour}));
+   
+    // console.log(user);
+
+    // const files = acceptedFiles.map(file => (
+    //   <li key={file.path}>
+    //     {file.path} - {file.size} bytes
+    //   </li>
+    // ));
+
+    const handleChange = (e) => {
+    setTourData( prevData => ({
+      ...prevData,
+      [e.target.name] : e.target.value
+    }))
+    setErrors((prevErrors) => ({ ...prevErrors, [e.target.name]: '' }));
+  
   }
 
-  return (
-  <Box style={{ padding: 16, margin: 'auto', maxWidth: 600 }}>
-    <Typography variant="h4" align="center" component="h1" gutterBottom gutter>
-      Add Tour
-    </Typography>
+    //  handle react-input-chip
+    const handleChip = (newChips) => {
+      setChips(newChips);
+      setTourData( prevData => ({
+        ...prevData,
+        tags: newChips.map( chip => chip)
+      }))
+      setErrors((prevErrors) => ({ ...prevErrors, tags: '' }));
+    }
+
+    const onDrop = useCallback((acceptedFiles) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(acceptedFiles[0]);
+      // console.log(reader?.result);
+      reader.onloadend = () => {
+        setTourData({
+          ...tourData,
+          imageFile: reader?.result,
+        });
+      };
+    }, [tourData]);
+
+    // Submit Form
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      const newErrors = {};
+      if (!tourData.title) {
+        newErrors.title = 'Title is required';
+      }
+      if (!tourData.description) {
+        newErrors.description = 'Description is required';
+      }
+      if (chips.length === 0) {
+        newErrors.tags = 'At least one tag is required';
+      }
+      if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
+      } else {
+        // console.log(tourData);
+      }
+      
+      if (tourData.title && tourData.description && tourData.tags) {
+      const updatedTourData = { ...tourData, name: user?.result?.name };
+      console.log(updatedTourData);
+      dispatch(createTour({ updatedTourData, navigate, toast }))
+      }
+      handleClear();
+    };
     
-    
-    <Box component="form" autoComplete='off'  noValidate>
-      <Paper style={{ padding: 16 }} elevation={3}>
-        <Grid container alignItems="flex-start" spacing={2}>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              required
-              name="title"
-              type="text"
-              label="Title"
-              value={ tourData?.title || ""}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              name="description"
-              fullWidth
-              required
-              multiline
-              rows={2}
-              value={ tourData?.description || ""}
-              label="Description"
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <MuiChipsInput 
-              name='tags'
-              value={tourData?.tags} 
-              fullWidth
-              label="Tags"
-            />
-          </Grid>
-          <Grid item xs={12}>
+    //  Clear From
+    const handleClear = (e) => {
+      setTourData({ title: "", description: "", tags: []}); 
+    };
+
+    // For Keyboard Enter 
+    const handleKeyDown = event => {
+      if (event.key === "Enter") {
+        submitButtonRef.current.click();
+        setTourData({ title: "", description: "", tags: []}); 
+      }
+    };
+
+
+    useEffect(() => {
+      error && toast.error(error);
+    }, [error]);
+  
+
+    return (
+    <Box style={{ padding: 16, margin: 'auto', maxWidth: 600 }}>
+      <Typography variant="h4" align="center" component="h1" gutterBottom gutter>
+        Add Tour
+      </Typography>
+      
+      
+      <Box component="form" autoComplete='off'  noValidate encType='multipart/form-data'>
+        <Paper style={{ padding: 16 }} elevation={3}>
+          <Grid container alignItems="flex-start" spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth 
+                required
+                name="title"
+                type="text"
+                label="Title"
+                value={ tourData?.title || ""}
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+                error={errors.title}
+                helperText={errors.title}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="description"
+                fullWidth
+                required
+                multiline
+                rows={2}
+                value={ tourData?.description || ""}
+                label="Description"
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+                error={errors.description}
+                helperText={errors.description}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <MuiChipsInput 
+                value={tourData.tags.map(chip => chip)} 
+                fullWidth
+                label="Tags"
+                onChange={handleChip}
+                error={errors.tags}
+                helperText={errors.tags}
+              />
+            </Grid>
+            <Grid item xs={12}>
               <Dropzone
                 acceptedFiles=".jpg,.jpeg,.png"
                 multiple={false}
-                onDrop={(acceptedFiles) =>
-                  setTourData({...tourData, imageFile: acceptedFiles})
-                }
+                // onDrop={(acceptedFiles) =>
+                //   setTourData({...tourData, imageFile: acceptedFiles})
+                // }
+                onDrop={onDrop}
               >
                 {({ getRootProps, getInputProps }) => (
                     <Box 
@@ -89,40 +187,42 @@ const AddTour = () => {
                       }}
                       >
                       <input {...getInputProps()} />
-                      <p className='m-0 text-black-50'>Add Picture</p>
                       {!tourData?.imageFile ? (
-                        <p>Add Picture Here</p>
+                        <p className='text-black-50 m-0'>Add Picture Here</p>
                       ) : (
                         <Box>
-                          <Typography>{tourData?.imageFile?.name}</Typography>
+                          <Typography>{tourData?.imageFile[0]?.name}</Typography>
                           {/* <EditOutlinedIcon /> */}
                         </Box>
                       )}
                     </Box>
                   )}
-                  </Dropzone>
+              </Dropzone>
+            </Grid>
+            <Grid item style={{ marginTop: 16 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                className='me-3'
+                ref={submitButtonRef}
+                onClick={handleSubmit}
+              >
+                Submit
+              </Button>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={handleClear}
+              >
+                Clear
+              </Button>
+            </Grid>
           </Grid>
-          <Grid item style={{ marginTop: 16 }}>
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              className='me-3'
-            >
-              Submit
-            </Button>
-            <Button
-              variant="contained"
-              color="error"
-              type="submit"
-            >
-              Clear
-            </Button>
-          </Grid>
-        </Grid>
-      </Paper>
+        </Paper>
+      </Box>
+      {/* <img src={tourImage} /> */}
     </Box>
-  </Box>
-)}
+  )}
 
-export default AddTour
+  export default AddTour
