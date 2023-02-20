@@ -31,10 +31,10 @@ export const register = createAsyncThunk(
 
 export const googleLogin = createAsyncThunk(
     "auth/googleLogin",
-    async({ formValue, navigate, toast},{ rejectWithValue }) => {
+    async({ decodeGoogleToken, navigate, toast},{ rejectWithValue }) => {
         // console.log(formValue);
         try {
-            const response = await api.googleLogin(formValue);
+            const response = await api.googleLogin(decodeGoogleToken);
             toast.success("Google Login Successfully");
             navigate("/");
             return response.data;

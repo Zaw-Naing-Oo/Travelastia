@@ -169,9 +169,9 @@ const Login = () => {
                   <GoogleLogin
                     onSuccess={credentialResponse => {
                       const token = credentialResponse?.credential;
-                      const formValue = jwt_decode(token);
+                      const decodeGoogleToken = jwt_decode(token);
                       // console.log(formValue);
-                      dispatch(googleLogin({formValue, navigate, toast }));
+                      dispatch(googleLogin({decodeGoogleToken, navigate, toast }));
                     }}
                     shape="circle"
                     type='icon'
