@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { ToastContainer } from "react-toastify"
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar'
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -28,10 +28,11 @@ const App = () => {
     <ToastContainer />
       <Navbar />
       <Routes>
-        <Route path='/' element={ <Home /> } />
+        <Route path='/' element = { <Navigate to='/tours' /> } />
+        <Route path='/tours' element={ <Home /> } />
         <Route path='/login' element={ <Login /> } />
         <Route path='/register' element={ <Register /> } />
-        <Route path='/tour/createTour' element={ <AddTour /> } />
+        <Route path='/tours/createTour' element={ <AddTour /> } />
         <Route path='/tour/:id' element={ <AddEditTour /> } />
       </Routes>
     </>

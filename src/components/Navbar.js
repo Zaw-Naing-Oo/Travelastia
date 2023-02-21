@@ -61,7 +61,7 @@ function Navbar() {
             <ListItemIcon>
               <InboxIcon /> 
             </ListItemIcon>
-            <ListItemText primary="Add Tour" />
+            <ListItemText primary="Add Tour" onClick={() => navigate("/tours/createTour")}/>
           </ListItemButton>
           <ListItemButton>
             <ListItemIcon>
@@ -152,7 +152,7 @@ function Navbar() {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
              <Link
-                to='/tour/createTour'
+                to='/tours/createTour'
                 onClick={handleCloseNavMenu}
                 className="text-white m-2"
               >

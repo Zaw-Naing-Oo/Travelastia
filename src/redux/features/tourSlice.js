@@ -1,9 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import * as api  from "../api";
-import {Buffer} from "buffer"
 
 export const createTour = createAsyncThunk(
-    "tour/create",
+    "tours/create",
     async ({ updatedTourData, navigate, toast}, { rejectWithValue}) => {
         try {
             const { title, description, imageFile, tags} = updatedTourData;
@@ -20,9 +19,22 @@ export const createTour = createAsyncThunk(
             // }
 
             const response = await api.createTour(updatedFormData);
-            console.log(response);
+            // console.log(response);
             toast.success("Create Tour Post Successfully");
             navigate("/");
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error?.response?.data)
+        }
+    }
+);
+
+export const getTours = createAsyncThunk(
+    "tours/getTours",
+    async (_, { rejectWithValue}) => {
+        try {
+            const response = await api.getTours();
+            console.log(response);
             return response.data;
         } catch (error) {
             return rejectWithValue(error?.response?.data)
@@ -51,7 +63,18 @@ export const tourSlice = createSlice({
         },
         [createTour.rejected] : (state,action) => {
             state.loading = false;
-            state.error = action.payload?.message || "An error occur";
+            state.error = action.payload?.message;
+        },
+        [getTours.pending] : (state, action) => {
+            state.loading = true
+        },
+        [getTours.fulfilled] : (state,action) => {
+            state.loading = false;
+            state.tours = action.payload;
+        },
+        [getTours.rejected] : (state,action) => {
+            state.loading = false;
+            state.error = action.payload?.message;
         },
     }
 });

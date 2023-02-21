@@ -16,7 +16,9 @@ export const signUp = (formData) => API.post("/user/signup", formData);
 
 export const googleLogin = (formData) => API.post("/user/googleLogin", formData);
 
-export const createTour = (updatedFormData) => API.post("/tour/createTour", updatedFormData, {
+export const createTour = (updatedFormData) => API.post("/tours/createTour", updatedFormData, {
     headers: { 'Content-Type' : 'multipart/form-data'}
 });
+
+export const getTours = () => API.get("/tours");
 

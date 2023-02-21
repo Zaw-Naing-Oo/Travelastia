@@ -63,11 +63,12 @@ import { toast } from "react-toastify"
     const onDrop = useCallback((acceptedFiles) => {
       const reader = new FileReader();
       reader.readAsDataURL(acceptedFiles[0]);
-      // console.log(reader?.result);
+      console.log(acceptedFiles[0].name)
       reader.onloadend = () => {
         setTourData({
           ...tourData,
           imageFile: reader?.result,
+          imageName: acceptedFiles[0]?.name
         });
       };
     }, [tourData]);
@@ -191,7 +192,7 @@ import { toast } from "react-toastify"
                         <p className='text-black-50 m-0'>Add Picture Here</p>
                       ) : (
                         <Box>
-                          <Typography>{tourData?.imageFile[0]?.name}</Typography>
+                          <Typography>{tourData?.imageName}</Typography>
                           {/* <EditOutlinedIcon /> */}
                         </Box>
                       )}
