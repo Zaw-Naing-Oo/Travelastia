@@ -11,6 +11,7 @@ import { setUser } from './redux/features/authSlice';
 import AddTour from './pages/AddTour';
 import AddEditTour from './pages/AddEditTour';
 import CssBaseline from "@mui/material/CssBaseline";
+import TourDetail from './pages/TourDetail';
 
 
 const App = () => {
@@ -34,6 +35,7 @@ const App = () => {
         <Route path='/register' element={ <Register /> } />
         <Route path='/tours/createTour' element={ <AddTour /> } />
         <Route path='/tour/:id' element={ <AddEditTour /> } />
+        <Route path='/tours/detail/:id' element={ <TourDetail /> } />
       </Routes>
     </>
   )

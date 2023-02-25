@@ -1,118 +1,51 @@
 import React, { useEffect } from 'react'
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import { useSelector, useDispatch} from "react-redux"
-import { getTours } from '../redux/features/tourSlice';
+// import { getTours } from '../redux/features/tourSlice';
+import { getTours } from '../redux/api';
+import { useQuery } from 'react-query';
+import SingleCard from '../components/SingleCard';
 
 
 const Home = () => {
   const dispatch = useDispatch();
-   const tours = useSelector( state => state?.tour);
+   const tourss = useSelector( state => state?.tour?.tours?.allTours);
+   console.log(tourss)
 
-  useEffect(() => {
-    dispatch(getTours())
-  }, [])
+  // useEffect(() => {
+  //   dispatch(getTours())
+  // }, [])
+
+
+  const { isLoading, isError, data, error } = useQuery('tours', getTours);
+  const tours = data?.data?.allTours;
+//   const base64Data = Buffer.from(tours[0].image).toString('base64');
+// console.log(base64Data);
+console.log(isLoading);
+
+  if (isLoading) {
+    return <h1 className='mt-5'>Loading...</h1>
+  }
+
+//   if (isError) {
+//     return <span>Error: {error.message}</span>
+//   }
   
 
   return (
-    <Box paddingX={8} paddingY={4} style={{margin: 'auto',}}>
+    <>
+    <Box paddingX={8} paddingY={4} style={{margin: 'auto', marginTop: '4rem'}}>
       <Grid container spacing={4}>
-        <Grid item xs={12} sm={6} md={4} lg={3}>
-          <Card sx={{ maxWidth: 345 }}>
-            <CardMedia
-              sx={{ height: 140 }}
-              image="/static/images/cards/contemplative-reptile.jpg"
-              title="green iguana"
-            />
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                Lizard
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Lizards are a widespread group of squamate reptiles, with over 6,000
-                species, ranging across all continents except Antarctica
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button size="small">Share</Button>
-              <Button size="small">Learn More</Button>
-            </CardActions>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}  lg={3}>
-           <Card sx={{ maxWidth: 345 }}>
-      <CardMedia
-        sx={{ height: 140 }}
-        image="/static/images/cards/contemplative-reptile.jpg"
-        title="green iguana"
-      />
-      <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
-          Lizard
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Lizards are a widespread group of squamate reptiles, with over 6,000
-          species, ranging across all continents except Antarctica
-        </Typography>
-      </CardContent>
-      <CardActions>
-        <Button size="small">Share</Button>
-        <Button size="small">Learn More</Button>
-      </CardActions>
-    </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}  lg={3}>
-           <Card sx={{ maxWidth: 345 }}>
-      <CardMedia
-        sx={{ height: 140 }}
-        image="/static/images/cards/contemplative-reptile.jpg"
-        title="green iguana"
-      />
-      <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
-          Lizard
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Lizards are a widespread group of squamate reptiles, with over 6,000
-          species, ranging across all continents except Antarctica
-        </Typography>
-      </CardContent>
-      <CardActions>
-        <Button size="small">Share</Button>
-        <Button size="small">Learn More</Button>
-      </CardActions>
-    </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}  lg={3}>
-           <Card sx={{ maxWidth: 345 }}>
-      <CardMedia
-        sx={{ height: 140 }}
-        image="/static/images/cards/contemplative-reptile.jpg"
-        title="green iguana"
-      />
-      <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
-          Lizard
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Lizards are a widespread group of squamate reptiles, with over 6,000
-          species, ranging across all continents except Antarctica
-        </Typography>
-      </CardContent>
-      <CardActions>
-        <Button size="small">Share</Button>
-        <Button size="small">Learn More</Button>
-      </CardActions>
-    </Card>
-        </Grid>
+         { tours.length > 0 && tours.map( (tour, index) => (
+          <Grid key={index} item xs={12} sm={6} md={4} lg={3}>
+            <SingleCard tour={tour} />
+          </Grid>
+
+         ))}
       </Grid>
     </Box>
+    </>
   )
 }
 

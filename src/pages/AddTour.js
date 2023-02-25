@@ -11,6 +11,9 @@ import {useSelector, useDispatch} from "react-redux"
 import { createTour } from '../redux/features/tourSlice';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "react-toastify"
+import { useMediaQuery } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+
 
   const AddTour = () => {
 
@@ -20,6 +23,9 @@ import { toast } from "react-toastify"
     const [errors, setErrors] = useState({});
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const theme = useTheme();
+   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
 
     // For error message
     const [validationError, setValidationError] = useState({
@@ -63,12 +69,13 @@ import { toast } from "react-toastify"
     const onDrop = useCallback((acceptedFiles) => {
       const reader = new FileReader();
       reader.readAsDataURL(acceptedFiles[0]);
-      console.log(acceptedFiles[0].name)
+      // console.log(acceptedFiles[0]?.type);
       reader.onloadend = () => {
         setTourData({
           ...tourData,
           imageFile: reader?.result,
-          imageName: acceptedFiles[0]?.name
+          imageName: acceptedFiles[0]?.name,
+          imageType: acceptedFiles[0]?.type
         });
       };
     }, [tourData]);
@@ -120,8 +127,8 @@ import { toast } from "react-toastify"
   
 
     return (
-    <Box style={{ padding: 16, margin: 'auto', maxWidth: 600 }}>
-      <Typography variant="h4" align="center" component="h1" gutterBottom gutter>
+    <Box sx={{margin: 'auto', marginTop: '3rem', maxWidth: 800, padding: isMobile ? 6 : 10 }}>
+      <Typography variant="h4" align="center" component="h1" gutterBottom>
         Add Tour
       </Typography>
       

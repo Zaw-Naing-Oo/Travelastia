@@ -22,3 +22,5 @@ export const createTour = (updatedFormData) => API.post("/tours/createTour", upd
 
 export const getTours = () => API.get("/tours");
 
+export const getTour = (id) => API.get(`/tours/detail/${id}`);
+
