@@ -4,8 +4,9 @@ import * as api  from "../api";
 export const createTour = createAsyncThunk(
     "tours/create",
     async ({ updatedTourData, navigate, toast}, { rejectWithValue}) => {
+        console.log(updatedTourData);
         try {
-            const { title, description, imageFile, tags, imageType, name} = updatedTourData;
+            const { title, description, imageFile, tags, imageType, name, imageName } = updatedTourData;
 
              // create form data and append fields
              const updatedFormData = new FormData();
@@ -13,8 +14,11 @@ export const createTour = createAsyncThunk(
              updatedFormData.append("description", description);
              updatedFormData.append("name", name);
              updatedFormData.append("tags", tags);
-             updatedFormData.append("image", imageFile);
-             updatedFormData.append("imageType", imageType);
+             if(imageFile) {
+                updatedFormData.append("image", imageFile);
+                updatedFormData.append("imageType", imageType);
+                updatedFormData.append("imageName", imageName);
+            }
 
             //  for (var pair of updatedFormData.entries()) {
             //     console.log(pair[0]+ ', ' + pair[1]); 
@@ -22,7 +26,7 @@ export const createTour = createAsyncThunk(
 
             const response = await api.createTour(updatedFormData);
             // console.log(response);
-            toast.success("Create Tour Post Successfully");
+            toast.success("Create Post Successfully");
             navigate("/");
             return response.data;
         } catch (error) {
@@ -36,7 +40,7 @@ export const getTours = createAsyncThunk(
     async (_, { rejectWithValue}) => {
         try {
             const response = await api.getTours();
-            console.log(response);
+            // console.log(response);
             return response.data;
         } catch (error) {
             return rejectWithValue(error?.response?.data)
@@ -45,10 +49,23 @@ export const getTours = createAsyncThunk(
 );
 
 export const getTour = createAsyncThunk(
-    "tours/getTours",
+    "tours/getTour",
     async (id, { rejectWithValue}) => {
         try {
             const response = await api.getTour(id);
+            // console.log(response);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error?.response?.data)
+        }
+    }
+);
+
+export const getToursByUser = createAsyncThunk(
+    "tours/getToursByUser",
+    async (userId, { rejectWithValue}) => {
+        try {
+            const response = await api.getToursByUserApi(userId);
             console.log(response);
             return response.data;
         } catch (error) {
@@ -57,10 +74,56 @@ export const getTour = createAsyncThunk(
     }
 );
 
+export const deleteTour = createAsyncThunk(
+    "tours/deleteTour",
+    async ({ id, toast }, { rejectWithValue}) => {
+        try {
+            const response = await api.deleteTourApi(id); 
+            toast.success("Deleted Successfully");
+            console.log(response);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error?.response?.data)
+        }
+    }
+);
+
+export const updateTour = createAsyncThunk(
+    "tours/updateTour",
+    async ({ id, toast, updatedTourData, navigate }, { rejectWithValue}) => {
+
+        console.log(id, updatedTourData);
+        try {
+            const { title, description, imageFile, tags, imageType, name, imageName } = updatedTourData;
+
+             // create form data and append fields
+             const updatedFormData = new FormData();
+             updatedFormData.append("title", title);
+             updatedFormData.append("description", description);
+             updatedFormData.append("name", name);
+             updatedFormData.append("tags", tags);
+             if(imageFile) {
+                updatedFormData.append("image", imageFile);
+                updatedFormData.append("imageType", imageType);
+                updatedFormData.append("imageName", imageName);
+            }
+
+            const response = await api.updateTourApi(id, updatedFormData); 
+            toast.success("Updated Successfully");
+            navigate("/");
+            // console.log(response);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error?.response?.data)
+        }
+    }
+);
+
+
 const initialState = {
     tour: {},
     tours: [],
-    userTour: {},
+    userTour: [],
     error: "",
     loading: false
 };
@@ -68,6 +131,12 @@ const initialState = {
 export const tourSlice = createSlice({
     name: 'tour',
     initialState,
+    // reducers: {
+    //     create :(state,action) => {
+    //        console.log(action.payload);
+    //        state.tours = [...state.tours, action.payload];
+    //     }
+    // },
     extraReducers: {
         [createTour.pending] : (state, action) => {
             state.loading = true
@@ -102,7 +171,51 @@ export const tourSlice = createSlice({
             state.loading = false;
             state.error = action.payload?.message;
         },
+        [getToursByUser.pending] : (state, action) => {
+            state.loading = true
+        },
+        [getToursByUser.fulfilled] : (state,action) => {
+            state.loading = false;
+            state.userTour = [action.payload];
+        },
+        [getToursByUser.rejected] : (state,action) => {
+            state.loading = false;
+            state.error = action.payload?.message;
+        },
+        [deleteTour.pending] : (state, action) => {
+            state.loading = true
+        },
+        [deleteTour.fulfilled] : (state,action) => {
+            state.loading = false;
+            console.log("action" , action)
+            const { arg : {id} } = action.meta;
+            if(id) {
+              state.userTour = state.userTour.filter(tour => tour._id !== id );
+              state.tours = state.tours.filter(tour => tour._id !== id );
+            }
+        },
+        [deleteTour.rejected] : (state,action) => {
+            state.loading = false;
+            state.error = action.payload?.message;
+        },
+        [updateTour.pending] : (state, action) => {
+            state.loading = true
+        },
+        [updateTour.fulfilled] : (state,action) => {
+            state.loading = false;
+            // console.log("action" , action)
+            const { arg : {id} } = action.meta;
+            if(id) {
+              state.userTour = state.userTour.map(tour => tour._id === id ? action.payload : tour );
+              state.tours = state.tours.filter(tour => tour._id === id ? action.payload : tour );
+            }
+        },
+        [updateTour.rejected] : (state,action) => {
+            state.loading = false;
+            state.error = action.payload?.message;
+        },
     }
 });
 
+// export const { create } = tourSlice.actions
 export default tourSlice.reducer

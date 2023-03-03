@@ -29,6 +29,7 @@ function Navbar() {
 
   // console.log(useSelector(state => state));
   const user = useSelector(state => state?.auth?.user);
+  const userId = user?.result?._id;
 
 
   const handleCloseNavMenu = () => {
@@ -61,9 +62,9 @@ function Navbar() {
             <ListItemIcon>
               <InboxIcon /> 
             </ListItemIcon>
-            <ListItemText primary="Add Tour" onClick={() => navigate("/tours/createTour")}/>
+            <ListItemText primary="Add Tour" onClick={() => navigate("/tours/createOrEdit")}/>
           </ListItemButton>
-          <ListItemButton>
+          <ListItemButton onClick={ () => navigate(`tours/dashboard/${userId}`)}>
             <ListItemIcon>
               <InboxIcon /> 
             </ListItemIcon>
@@ -152,14 +153,14 @@ function Navbar() {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
              <Link
-                to='/tours/createTour'
+                to='/tours/createOrEdit'
                 onClick={handleCloseNavMenu}
                 className="text-white m-2"
               >
                 Add Tour
               </Link>
               <Link
-                to='/dashboard'
+                to={`tours/dashboard/${userId}`}
                 onClick={handleCloseNavMenu}
                 className="text-white m-2"
               >

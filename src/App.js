@@ -12,6 +12,7 @@ import AddTour from './pages/AddTour';
 import AddEditTour from './pages/AddEditTour';
 import CssBaseline from "@mui/material/CssBaseline";
 import TourDetail from './pages/TourDetail';
+import Dashboard from './pages/Dashboard';
 
 
 const App = () => {
@@ -33,9 +34,10 @@ const App = () => {
         <Route path='/tours' element={ <Home /> } />
         <Route path='/login' element={ <Login /> } />
         <Route path='/register' element={ <Register /> } />
-        <Route path='/tours/createTour' element={ <AddTour /> } />
+        <Route path='/tours/createOrEdit/:id?' element={ <AddTour /> } />
         <Route path='/tour/:id' element={ <AddEditTour /> } />
         <Route path='/tours/detail/:id' element={ <TourDetail /> } />
+        <Route path='/tours/dashboard/:id' element={ <Dashboard /> } />
       </Routes>
     </>
   )

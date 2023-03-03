@@ -16,11 +16,19 @@ export const signUp = (formData) => API.post("/user/signup", formData);
 
 export const googleLogin = (formData) => API.post("/user/googleLogin", formData);
 
-export const createTour = (updatedFormData) => API.post("/tours/createTour", updatedFormData, {
+export const createTour = (updatedFormData) => API.post("/tours/createOrEdit", updatedFormData, {
     headers: { 'Content-Type' : 'multipart/form-data'}
 });
 
 export const getTours = () => API.get("/tours");
 
 export const getTour = (id) => API.get(`/tours/detail/${id}`);
+
+export const getTourToEdit = (id) => API.get(`/tours/createOrEdit/${id}`);
+
+export const getToursByUserApi = (id) => API.get(`/tours/dashboard/${id}`);
+
+export const deleteTourApi = (id) => API.delete(`/tours/dashboard/${id}`);
+
+export const updateTourApi = (id, updatedTourData) => API.patch(`/tours/createOrEdit/${id}`, updatedTourData);
 

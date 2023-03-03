@@ -8,24 +8,26 @@ import Button from '@mui/material/Button';
 import { MuiChipsInput } from 'mui-chips-input'
 import Dropzone from 'react-dropzone';
 import {useSelector, useDispatch} from "react-redux"
-import { createTour } from '../redux/features/tourSlice';
-import { useNavigate } from 'react-router-dom';
+import { create, createTour, updateTour } from '../redux/features/tourSlice';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from "react-toastify"
 import { useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { getTourToEdit } from '../redux/api';
 
 
   const AddTour = () => {
 
-    const [ tourData, setTourData ] = useState({ title: "", description: "", tags: [] });
+    const [ tourData, setTourData ] = useState({ title: "", description: "", tags: [], imageFile: null, imageType: "", imageName: "" });
     const [chips, setChips] = React.useState([]);
     const submitButtonRef = useRef(null);
     const [errors, setErrors] = useState({});
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const theme = useTheme();
-   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    
+    const { id } = useParams();
 
     // For error message
     const [validationError, setValidationError] = useState({
@@ -69,7 +71,7 @@ import { useTheme } from '@mui/material/styles';
     const onDrop = useCallback((acceptedFiles) => {
       const reader = new FileReader();
       reader.readAsDataURL(acceptedFiles[0]);
-      // console.log(acceptedFiles[0]?.type);
+      // console.log(acceptedFiles[0]);
       reader.onloadend = () => {
         setTourData({
           ...tourData,
@@ -78,11 +80,13 @@ import { useTheme } from '@mui/material/styles';
           imageType: acceptedFiles[0]?.type
         });
       };
+      // console.log(reader);
     }, [tourData]);
 
     // Submit Form
     const handleSubmit = (e) => {
       e.preventDefault();
+      console.log("chipsLength",chips.length);
       const newErrors = {};
       if (!tourData.title) {
         newErrors.title = 'Title is required';
@@ -100,9 +104,18 @@ import { useTheme } from '@mui/material/styles';
       }
       
       if (tourData.title && tourData.description && tourData.tags) {
-      const updatedTourData = { ...tourData, name: user?.result?.name };
-      console.log(updatedTourData);
-      dispatch(createTour({ updatedTourData, navigate, toast }))
+        // console.log(tourData);
+        if(!id) {
+          const updatedTourData = { ...tourData, name: user?.result?.name };
+          console.log(updatedTourData);
+          // dispatch(create(updatedTourData));
+          dispatch(createTour({ updatedTourData, navigate, toast }))
+        } else {
+          const updatedTourData = { ...tourData, name: user?.result?.name };
+          console.log(updatedTourData);
+          dispatch(updateTour({ updatedTourData, navigate, toast, id }))
+        }
+
       }
       handleClear();
     };
@@ -120,16 +133,57 @@ import { useTheme } from '@mui/material/styles';
       }
     };
 
+    useEffect( () => {
+       if(id) {
+        getTourToEdit(id)
+        .then(response => {
+          const tour = response?.data?.tour;
+          // console.log(tour);
+          // console.log(tour?.image);
+
+          // For tags
+          const fixTags = tour?.tags.join("").split(",");
+          // console.log(fixTags);
+          const uniqueTags = new Set([...chips, ...fixTags]); 
+          setChips(Array.from(uniqueTags));
+
+
+          // For image
+          const bufferImagte = tour?.image  
+          const imageData = bufferImagte?.data?.data; // Replace with buffer array image
+          const contentType = bufferImagte?.contentType; // Replace with the content type of image
+          const fileName = bufferImagte?.imageName; // Replace with the file name of image
+          const blob = new Blob([imageData], { type: contentType });
+          const file = new File([blob], fileName, { type: contentType });
+          const reader = new FileReader(); // use reader
+          reader.readAsDataURL(file);
+          reader.onloadend = () => {
+            setTourData({
+              ...tourData,
+              title: tour?.title,
+              description: tour?.description,
+              tags: Array.from(uniqueTags),
+              imageFile: reader?.result,
+              imageName: file?.name,
+              imageType: file?.type,
+            });
+          };
+          
+        })
+      }
+    }, [id]);
+
 
     useEffect(() => {
       error && toast.error(error);
     }, [error]);
+
   
 
     return (
     <Box sx={{margin: 'auto', marginTop: '3rem', maxWidth: 800, padding: isMobile ? 6 : 10 }}>
       <Typography variant="h4" align="center" component="h1" gutterBottom>
-        Add Tour
+        { id ? "Update Tour" : "Add tour"}
       </Typography>
       
       
@@ -178,6 +232,7 @@ import { useTheme } from '@mui/material/styles';
             <Grid item xs={12}>
               <Dropzone
                 acceptedFiles=".jpg,.jpeg,.png"
+                accept="image/*"
                 multiple={false}
                 // onDrop={(acceptedFiles) =>
                 //   setTourData({...tourData, imageFile: acceptedFiles})
@@ -195,7 +250,7 @@ import { useTheme } from '@mui/material/styles';
                       }}
                       >
                       <input {...getInputProps()} />
-                      {!tourData?.imageFile ? (
+                      {!tourData?.imageName ? (
                         <p className='text-black-50 m-0'>Add Picture Here</p>
                       ) : (
                         <Box>
@@ -216,7 +271,7 @@ import { useTheme } from '@mui/material/styles';
                 ref={submitButtonRef}
                 onClick={handleSubmit}
               >
-                Submit
+                { id ? "Update" : "Submit"}
               </Button>
               <Button
                 variant="contained"

@@ -30,7 +30,7 @@ const SingleCard = (props) => {
       <CardContent 
         sx={{ height: 140 }}
       >
-        <Typography gutterBottom variant="h5">
+        <Typography gutterBottom variant="h4">
           { props?.tour?.title }
         </Typography>
         <div className='d-flex text-black-50'>

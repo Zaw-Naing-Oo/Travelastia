@@ -11,7 +11,7 @@ import SingleCard from '../components/SingleCard';
 const Home = () => {
   const dispatch = useDispatch();
    const tourss = useSelector( state => state?.tour?.tours?.allTours);
-   console.log(tourss)
+   console.log(tourss);
 
   // useEffect(() => {
   //   dispatch(getTours())
@@ -22,7 +22,6 @@ const Home = () => {
   const tours = data?.data?.allTours;
 //   const base64Data = Buffer.from(tours[0].image).toString('base64');
 // console.log(base64Data);
-console.log(isLoading);
 
   if (isLoading) {
     return <h1 className='mt-5'>Loading...</h1>
