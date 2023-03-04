@@ -13,12 +13,14 @@ import AddEditTour from './pages/AddEditTour';
 import CssBaseline from "@mui/material/CssBaseline";
 import TourDetail from './pages/TourDetail';
 import Dashboard from './pages/Dashboard';
+import { useNavigate } from 'react-router-dom';
 
 
 const App = () => {
 
   const user = JSON.parse(localStorage.getItem("profile"));
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect( () => {
     dispatch(setUser(user));
@@ -37,7 +39,7 @@ const App = () => {
         <Route path='/tours/createOrEdit/:id?' element={ <AddTour /> } />
         <Route path='/tour/:id' element={ <AddEditTour /> } />
         <Route path='/tours/detail/:id' element={ <TourDetail /> } />
-        <Route path='/tours/dashboard/:id' element={ <Dashboard /> } />
+          <Route path='/tours/dashboard/:id' element={ <Dashboard /> } />
       </Routes>
     </>
   )

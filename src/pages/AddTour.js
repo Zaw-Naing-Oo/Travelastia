@@ -8,7 +8,7 @@ import Button from '@mui/material/Button';
 import { MuiChipsInput } from 'mui-chips-input'
 import Dropzone from 'react-dropzone';
 import {useSelector, useDispatch} from "react-redux"
-import { create, createTour, updateTour } from '../redux/features/tourSlice';
+import {  createTour, updateTour } from '../redux/features/tourSlice';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from "react-toastify"
 import { useMediaQuery } from '@mui/material';
@@ -22,32 +22,18 @@ import { getTourToEdit } from '../redux/api';
     const [chips, setChips] = React.useState([]);
     const submitButtonRef = useRef(null);
     const [errors, setErrors] = useState({});
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { id } = useParams();
+    
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     
-    const { id } = useParams();
-
-    // For error message
-    const [validationError, setValidationError] = useState({
-      titleError: '',
-      descriptionError: '',
-      tagsError: '',
-    });
-
-    // const [tagErrMsg, setTagErrMsg] = useState(null);
 
     const user = useSelector(state => state?.auth?.user);
     const { error, loading } = useSelector( state => ({...state?.tour}));
    
-    // console.log(user);
-
-    // const files = acceptedFiles.map(file => (
-    //   <li key={file.path}>
-    //     {file.path} - {file.size} bytes
-    //   </li>
-    // ));
 
     const handleChange = (e) => {
     setTourData( prevData => ({
@@ -71,7 +57,7 @@ import { getTourToEdit } from '../redux/api';
     const onDrop = useCallback((acceptedFiles) => {
       const reader = new FileReader();
       reader.readAsDataURL(acceptedFiles[0]);
-      // console.log(acceptedFiles[0]);
+      console.log(acceptedFiles[0]);
       reader.onloadend = () => {
         setTourData({
           ...tourData,
@@ -106,14 +92,14 @@ import { getTourToEdit } from '../redux/api';
       if (tourData.title && tourData.description && tourData.tags) {
         // console.log(tourData);
         if(!id) {
-          const updatedTourData = { ...tourData, name: user?.result?.name };
-          console.log(updatedTourData);
+          const tocreateTour = { ...tourData, name: user?.result?.name };
+          console.log(tocreateTour);
           // dispatch(create(updatedTourData));
-          dispatch(createTour({ updatedTourData, navigate, toast }))
+          dispatch(createTour({ tocreateTour, navigate, toast }))
         } else {
-          const updatedTourData = { ...tourData, name: user?.result?.name };
-          console.log(updatedTourData);
-          dispatch(updateTour({ updatedTourData, navigate, toast, id }))
+          const toUpdateTour = { ...tourData, name: user?.result?.name };
+          console.log(toUpdateTour);
+          dispatch(updateTour({ toUpdateTour, navigate, toast, id }))
         }
 
       }
@@ -133,6 +119,7 @@ import { getTourToEdit } from '../redux/api';
       }
     };
 
+    // showing old data by fetching in the input field
     useEffect( () => {
        if(id) {
         getTourToEdit(id)
@@ -174,9 +161,17 @@ import { getTourToEdit } from '../redux/api';
     }, [id]);
 
 
+    // For Toast Error
     useEffect(() => {
       error && toast.error(error);
     }, [error]);
+
+    // protection for not login
+    useEffect( () => {
+      if(!user) {
+        navigate("/login")
+      }
+    }, [user])
 
   
 

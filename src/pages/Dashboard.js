@@ -10,7 +10,7 @@ import { useTheme } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import { useSelector, useDispatch} from "react-redux"
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 // import { getTours } from '../redux/features/tourSlice';
 import { getToursByUserApi } from '../redux/api';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
@@ -33,21 +33,11 @@ const Dashboard = () => {
     const user = useSelector(state => state?.auth?.user);
     const dispatch = useDispatch();
     const queryClient = useQueryClient();
-    // console.log(user);
+    console.log(user);
     const { id: userId } = useParams();
+    const navigate = useNavigate();
     // const useruserid = user?.result?._id;
 
-    // const useStyles = makeStyles(() => ({
-    //     card: {
-    //       border: '2px solid',
-    //       borderColor: '#E7EDF3',
-    //       borderRadius: 16,
-    //       transition: '0.4s',
-    //       '&:hover': {
-    //         borderColor: '#5B9FED',
-    //       },
-    //     },
-    //   }));
 
     // String cut function
     const strCut = (str, maxLength) => {
@@ -87,6 +77,12 @@ const Dashboard = () => {
     useEffect( () => {
      dispatch(getToursByUser(userId))
     }, [])
+
+    useEffect( () => {
+      if(!user) {
+        navigate("/")
+      }
+    }, [user])
 
 
     const { isLoading, isError, data, error } = useQuery('dashboard', () => getToursByUserApi(userId));

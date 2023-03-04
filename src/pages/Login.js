@@ -15,6 +15,7 @@ import {
   MDBIcon
 }
 from 'mdb-react-ui-kit';
+import Box from '@mui/material/Box'
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { googleLogin, login, setUser } from '../redux/features/authSlice';
@@ -118,7 +119,7 @@ const Login = () => {
             <h2 className="fw-bold mb-4 text-center">Signin now</h2>
 
 
-              <form onSubmit={handleSubmit}>
+              <Box component="form" autoComplete='off' encType='multipart/form-data' onSubmit={handleSubmit}>
                 <MDBValidation>
                   <MDBValidationItem invalid="Please enter email">
                     <MDBInput
@@ -158,7 +159,7 @@ const Login = () => {
                   { loading && <MDBSpinner style={{ width: '17px', height: '17px'}} role='status' size="sm" color="info" tag="span" className="me-2" /> }
                   Sign in
                 </MDBBtn>
-              </form>
+              </Box>
 
               <div className="text-center">
 

@@ -27,10 +27,9 @@ function Navbar() {
   const navigate = useNavigate();
   const disaptch = useDispatch();
 
-  // console.log(useSelector(state => state));
   const user = useSelector(state => state?.auth?.user);
   const userId = user?.result?._id;
-
+  // console.log(user)
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
@@ -62,14 +61,21 @@ function Navbar() {
             <ListItemIcon>
               <InboxIcon /> 
             </ListItemIcon>
-            <ListItemText primary="Add Tour" onClick={() => navigate("/tours/createOrEdit")}/>
+            <ListItemText primary="Add Tour" onClick={() => {
+              user ? navigate("/tours/createOrEdit") :
+                     navigate("/login");
+            }}/>
           </ListItemButton>
-          <ListItemButton onClick={ () => navigate(`tours/dashboard/${userId}`)}>
-            <ListItemIcon>
-              <InboxIcon /> 
-            </ListItemIcon>
-            <ListItemText primary="Dashboard" />
-          </ListItemButton>
+
+          { user && (
+             <ListItemButton onClick={ () => navigate(`tours/dashboard/${userId}`)}>
+             <ListItemIcon>
+               <InboxIcon /> 
+             </ListItemIcon>
+             <ListItemText primary="Dashboard" />
+           </ListItemButton>
+          )}
+
           { user ? (
           <ListItemButton onClick={() => disaptch(logout()) }>
             <ListItemIcon>
@@ -89,11 +95,11 @@ function Navbar() {
         </ListItem>
     </List>
   </Box>
-);
-  
+  );
+
 
   return (
-    <AppBar position="fixed">
+    <AppBar position="sticky" sx={{ background: "#2e7d32"}}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
 
@@ -152,20 +158,27 @@ function Navbar() {
             LOGO
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-             <Link
-                to='/tours/createOrEdit'
-                onClick={handleCloseNavMenu}
+             <Button
+                // to="/tours/createOrEdit"
                 className="text-white m-2"
+                 onClick={ () => {
+                  user ? navigate("/tours/createOrEdit")
+                       : navigate("/login")
+                 }}
               >
                 Add Tour
-              </Link>
-              <Link
-                to={`tours/dashboard/${userId}`}
-                onClick={handleCloseNavMenu}
-                className="text-white m-2"
-              >
-                Dashboard
-              </Link>
+              </Button>
+              { user && (
+                <Button
+                  // to={`tours/dashboard/${userId}`}
+                  onClick = { () => {
+                    navigate(`tours/dashboard/${userId}`)
+                  }}
+                  className="text-white m-2"
+                  >
+                  Dashboard
+                </Button>
+              )}
           </Box>
           {/* For Desktop end */}
 

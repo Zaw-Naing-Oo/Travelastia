@@ -3,10 +3,10 @@ import * as api  from "../api";
 
 export const createTour = createAsyncThunk(
     "tours/create",
-    async ({ updatedTourData, navigate, toast}, { rejectWithValue}) => {
-        console.log(updatedTourData);
+    async ({ tocreateTour, navigate, toast}, { rejectWithValue}) => {
+        console.log(tocreateTour);
         try {
-            const { title, description, imageFile, tags, imageType, name, imageName } = updatedTourData;
+            const { title, description, imageFile, tags, imageType, name, imageName } = tocreateTour;
 
              // create form data and append fields
              const updatedFormData = new FormData();
@@ -66,7 +66,7 @@ export const getToursByUser = createAsyncThunk(
     async (userId, { rejectWithValue}) => {
         try {
             const response = await api.getToursByUserApi(userId);
-            console.log(response);
+            // console.log(response);
             return response.data;
         } catch (error) {
             return rejectWithValue(error?.response?.data)
@@ -80,7 +80,7 @@ export const deleteTour = createAsyncThunk(
         try {
             const response = await api.deleteTourApi(id); 
             toast.success("Deleted Successfully");
-            console.log(response);
+            // console.log(response);
             return response.data;
         } catch (error) {
             return rejectWithValue(error?.response?.data)
@@ -90,11 +90,11 @@ export const deleteTour = createAsyncThunk(
 
 export const updateTour = createAsyncThunk(
     "tours/updateTour",
-    async ({ id, toast, updatedTourData, navigate }, { rejectWithValue}) => {
+    async ({ toUpdateTour, navigate, toast, id }, { rejectWithValue}) => {
 
-        console.log(id, updatedTourData);
+        console.log(id, toUpdateTour);
         try {
-            const { title, description, imageFile, tags, imageType, name, imageName } = updatedTourData;
+            const { title, description, imageFile, tags, imageType, name, imageName } = toUpdateTour;
 
              // create form data and append fields
              const updatedFormData = new FormData();

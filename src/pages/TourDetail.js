@@ -25,13 +25,8 @@ const TourDetail = () => {
    const theme = useTheme();
    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-   // Redux state
-  //  const tours = useSelector( state => state?.tour?.tours);
-  //  console.log(tours)
-
    const { isLoading, isError, data, error } = useQuery('tour', () =>  getTour(id));
   const tour = data?.data?.tour;
-  console.log(tour);
 
     const tag =tour?.tags.join(",").split(",").map( (tag,index) => (
     <Chip key={index} label={ tag } color="primary" sx={{ margin: "0.3rem"}} />
@@ -44,7 +39,7 @@ const TourDetail = () => {
   return (
     <>
      <Breadcrumbs separator="›" aria-label="breadcrumb" sx={{ fontSize: 17 ,marginTop: isMobile ? '5rem' : '7rem', marginLeft: isMobile ? '2rem' :'6rem', marginBottom: isMobile ? '1rem' : 0}}>
-        <Link underline="hover" color="inherit" href="/tours">
+        <Link underline="hover" color="inherit" href="/">
           Home
         </Link>
         <Typography color="text.primary" sx={{ fontSize: 17 }}>Detail</Typography>
