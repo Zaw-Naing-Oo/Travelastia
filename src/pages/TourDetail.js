@@ -62,7 +62,7 @@ const TourDetail = () => {
           <Grid item xs={12} sx={{ textAlign: "center", paddingX: isMobile ? 0 : 17, marginBottom: "1rem"}} boxShadow="none">
             <Card>
               <CardMedia
-                sx={{ height: 400 }}
+                sx={{ height: 400, objectFit: "cover" }}
                 image={`data:${data?.data?.tour?.image?.contentType};base64,${Buffer.from(data?.data?.tour?.image?.data).toString('base64')}`}
                 title={ tour?.title }
                 />

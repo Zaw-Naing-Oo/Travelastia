@@ -14,6 +14,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import TourDetail from './pages/TourDetail';
 import Dashboard from './pages/Dashboard';
 import { useNavigate } from 'react-router-dom';
+import Error from './components/Error';
 
 
 const App = () => {
@@ -39,7 +40,8 @@ const App = () => {
         <Route path='/tours/createOrEdit/:id?' element={ <AddTour /> } />
         <Route path='/tour/:id' element={ <AddEditTour /> } />
         <Route path='/tours/detail/:id' element={ <TourDetail /> } />
-          <Route path='/tours/dashboard/:id' element={ <Dashboard /> } />
+        <Route path='/tours/dashboard/:id' element={ <Dashboard /> } />
+        <Route path='*' element={ <Error /> } />
       </Routes>
     </>
   )

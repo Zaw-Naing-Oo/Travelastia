@@ -21,7 +21,14 @@ const SingleCard = (props) => {
   }
 
   return (
-    <Card>
+    <Card
+      sx={{
+        backgroundColor: "#f5f5f5",
+        boxShadow: "0px 3px 3px rgba(46, 125, 50, 0.25)",
+        border: "1px solid rgba(46, 125, 50, 0.5)",
+        color: "#222222",
+      }}
+    >
       <CardMedia
         sx={{ height: 150 }}
         image={`data:${props.tour?.image?.contentType};base64,${Buffer.from(props.tour?.image?.data).toString('base64')}`}

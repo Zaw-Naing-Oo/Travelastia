@@ -21,7 +21,9 @@ import { getTourToEdit } from '../redux/api';
     const [ tourData, setTourData ] = useState({ title: "", description: "", tags: [], imageFile: null, imageType: "", imageName: "" });
     const [chips, setChips] = React.useState([]);
     const submitButtonRef = useRef(null);
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState({
+      
+    });
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -30,8 +32,8 @@ import { getTourToEdit } from '../redux/api';
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     
-
-    const user = useSelector(state => state?.auth?.user);
+    const user = JSON.parse(localStorage.getItem("profile"));
+ 
     const { error, loading } = useSelector( state => ({...state?.tour}));
    
 
@@ -57,7 +59,7 @@ import { getTourToEdit } from '../redux/api';
     const onDrop = useCallback((acceptedFiles) => {
       const reader = new FileReader();
       reader.readAsDataURL(acceptedFiles[0]);
-      console.log(acceptedFiles[0]);
+      // console.log(acceptedFiles[0]);
       reader.onloadend = () => {
         setTourData({
           ...tourData,
@@ -65,6 +67,7 @@ import { getTourToEdit } from '../redux/api';
           imageName: acceptedFiles[0]?.name,
           imageType: acceptedFiles[0]?.type
         });
+        setErrors((prevErrors) => ({ ...prevErrors, imageFile: null }));
       };
       // console.log(reader);
     }, [tourData]);
@@ -72,24 +75,33 @@ import { getTourToEdit } from '../redux/api';
     // Submit Form
     const handleSubmit = (e) => {
       e.preventDefault();
-      console.log("chipsLength",chips.length);
+
       const newErrors = {};
       if (!tourData.title) {
         newErrors.title = 'Title is required';
+        
       }
+
       if (!tourData.description) {
         newErrors.description = 'Description is required';
+        
       }
+
       if (chips.length === 0) {
         newErrors.tags = 'At least one tag is required';
+        
       }
+
+      if (!tourData.imageFile) {
+        newErrors.imageFile = 'Please select an image file';
+      }
+        
       if (Object.keys(newErrors).length > 0) {
         setErrors(newErrors);
-      } else {
-        // console.log(tourData);
-      }
-      
-      if (tourData.title && tourData.description && tourData.tags) {
+        return;
+      } 
+
+      if (tourData.title && tourData.description && tourData.tags && tourData.imageFile) {
         // console.log(tourData);
         if(!id) {
           const tocreateTour = { ...tourData, name: user?.result?.name };
@@ -196,7 +208,7 @@ import { getTourToEdit } from '../redux/api';
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
                 error={errors.title}
-                helperText={errors.title}
+                helperText={errors.title ? "Title is Required" : ""}
               />
             </Grid>
             <Grid item xs={12}>
@@ -229,9 +241,6 @@ import { getTourToEdit } from '../redux/api';
                 acceptedFiles=".jpg,.jpeg,.png"
                 accept="image/*"
                 multiple={false}
-                // onDrop={(acceptedFiles) =>
-                //   setTourData({...tourData, imageFile: acceptedFiles})
-                // }
                 onDrop={onDrop}
               >
                 {({ getRootProps, getInputProps }) => (
@@ -241,7 +250,8 @@ import { getTourToEdit } from '../redux/api';
                         border: "2px dashed black",
                         padding: "1rem",
                         display: "flex",
-                        alignItems: "center"
+                        alignItems: "center",
+                        position: "relative",
                       }}
                       >
                       <input {...getInputProps()} />
@@ -250,14 +260,18 @@ import { getTourToEdit } from '../redux/api';
                       ) : (
                         <Box>
                           <Typography>{tourData?.imageName}</Typography>
-                          {/* <EditOutlinedIcon /> */}
                         </Box>
+                      )}
+                      {errors.imageFile && (
+                        <Typography color="error" variant="caption" sx={{ position: "absolute", left: 10,  bottom: -25}}>
+                          {errors.imageFile}
+                        </Typography>
                       )}
                     </Box>
                   )}
               </Dropzone>
             </Grid>
-            <Grid item style={{ marginTop: 16 }}>
+            <Grid item style={{ marginTop: 20 }}>
               <Button
                 variant="contained"
                 color="primary"
