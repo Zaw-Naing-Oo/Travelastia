@@ -10,16 +10,17 @@ import SingleCard from '../components/SingleCard';
 
 const Home = () => {
   const dispatch = useDispatch();
-   const tourss = useSelector( state => state?.tour?.tours?.allTours);
-   console.log(tourss);
+  //  const tourss = useSelector( state => state?.tour?.tours?.allTours);
+  //  console.log(tourss);
 
   // useEffect(() => {
   //   dispatch(getTours())
   // }, [])
 
 
-  const { isLoading, isError, data, error } = useQuery('tours', getTours);
+  const { isLoading, isError, data, error } = useQuery('tours',  getTours);
   const tours = data?.data?.allTours;
+  console.log(tours) 
 //   const base64Data = Buffer.from(tours[0].image).toString('base64');
 // console.log(base64Data);
 

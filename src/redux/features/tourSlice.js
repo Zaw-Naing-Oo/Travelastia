@@ -4,9 +4,9 @@ import * as api  from "../api";
 export const createTour = createAsyncThunk(
     "tours/create",
     async ({ tocreateTour, navigate, toast}, { rejectWithValue}) => {
-        console.log(tocreateTour);
+        // console.log(tocreateTour);
         try {
-            const { title, description, imageFile, tags, imageType, name, imageName } = tocreateTour;
+            const { title, description, imageFile, tags, imageType, name, imageName, userId } = tocreateTour;
 
              // create form data and append fields
              const updatedFormData = new FormData();
@@ -19,10 +19,12 @@ export const createTour = createAsyncThunk(
                 updatedFormData.append("imageType", imageType);
                 updatedFormData.append("imageName", imageName);
             }
+            updatedFormData.append("userId", userId)
 
             //  for (var pair of updatedFormData.entries()) {
             //     console.log(pair[0]+ ', ' + pair[1]); 
             // }
+            // return;
 
             const response = await api.createTour(updatedFormData);
             // console.log(response);
@@ -92,7 +94,7 @@ export const updateTour = createAsyncThunk(
     "tours/updateTour",
     async ({ toUpdateTour, navigate, toast, id }, { rejectWithValue}) => {
 
-        console.log(id, toUpdateTour);
+        console.log("update", toUpdateTour);
         try {
             const { title, description, imageFile, tags, imageType, name, imageName } = toUpdateTour;
 
@@ -102,11 +104,9 @@ export const updateTour = createAsyncThunk(
              updatedFormData.append("description", description);
              updatedFormData.append("name", name);
              updatedFormData.append("tags", tags);
-             if(imageFile) {
-                updatedFormData.append("image", imageFile);
-                updatedFormData.append("imageType", imageType);
-                updatedFormData.append("imageName", imageName);
-            }
+             updatedFormData.append("image", imageFile);
+             updatedFormData.append("imageType", imageType);
+             updatedFormData.append("imageName", imageName);
 
             const response = await api.updateTourApi(id, updatedFormData); 
             toast.success("Updated Successfully");

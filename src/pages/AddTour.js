@@ -14,6 +14,7 @@ import { toast } from "react-toastify"
 import { useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { getTourToEdit } from '../redux/api';
+import imageCompression from 'browser-image-compression'
 
 
   const AddTour = () => {
@@ -33,6 +34,7 @@ import { getTourToEdit } from '../redux/api';
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     
     const user = JSON.parse(localStorage.getItem("profile"));
+
  
     const { error, loading } = useSelector( state => ({...state?.tour}));
    
@@ -104,13 +106,14 @@ import { getTourToEdit } from '../redux/api';
       if (tourData.title && tourData.description && tourData.tags && tourData.imageFile) {
         // console.log(tourData);
         if(!id) {
-          const tocreateTour = { ...tourData, name: user?.result?.name };
-          console.log(tocreateTour);
+          const tocreateTour = { ...tourData, name: user?.result?.name, userId: user?.result?._id };
+          // console.log(tocreateTour);
           // dispatch(create(updatedTourData));
           dispatch(createTour({ tocreateTour, navigate, toast }))
         } else {
           const toUpdateTour = { ...tourData, name: user?.result?.name };
-          console.log(toUpdateTour);
+          // console.log(toUpdateTour);
+          // return;
           dispatch(updateTour({ toUpdateTour, navigate, toast, id }))
         }
 
@@ -135,9 +138,9 @@ import { getTourToEdit } from '../redux/api';
     useEffect( () => {
        if(id) {
         getTourToEdit(id)
-        .then(response => {
-          const tour = response?.data?.tour;
-          // console.log(tour);
+        .then(async response => {
+          const tour = await response?.data?.tour;
+          console.log(tour);
           // console.log(tour?.image);
 
           // For tags
@@ -146,30 +149,15 @@ import { getTourToEdit } from '../redux/api';
           const uniqueTags = new Set([...chips, ...fixTags]); 
           setChips(Array.from(uniqueTags));
 
-
-          // For image
-          const bufferImagte = tour?.image  
-          const imageData = bufferImagte?.data?.data; // Replace with buffer array image
-          const contentType = bufferImagte?.contentType; // Replace with the content type of image
-          const fileName = bufferImagte?.imageName; // Replace with the file name of image
-          const blob = new Blob([imageData], { type: contentType });
-          const file = new File([blob], fileName, { type: contentType });
-          const reader = new FileReader(); // use reader
-          reader.readAsDataURL(file);
-          reader.onloadend = () => {
-            setTourData({
-              ...tourData,
-              title: tour?.title,
-              description: tour?.description,
-              tags: Array.from(uniqueTags),
-              imageFile: reader?.result,
-              imageName: file?.name,
-              imageType: file?.type,
-            });
-          };
-          
+          setTourData({
+            ...tourData,
+            title: tour?.title,
+            description: tour?.description,
+            tags: Array.from(uniqueTags),
+          });
+            
         })
-      }
+      } 
     }, [id]);
 
 

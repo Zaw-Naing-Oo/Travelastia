@@ -31,9 +31,11 @@ const Dashboard = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const user = useSelector(state => state?.auth?.user);
+    // const user = JSON.parse(localStorage.getItem("profile"));
+
     const dispatch = useDispatch();
     const queryClient = useQueryClient();
-    console.log(user);
+    // console.log(user);
     const { id: userId } = useParams();
     const navigate = useNavigate();
     // const useruserid = user?.result?._id;
@@ -53,6 +55,7 @@ const Dashboard = () => {
       {
         onSuccess: () => {
           toast.success("Deleted Successfully");
+          navigate("/tours")
         },
         onError: (error) => {
           toast.error(error?.response?.data?.message || "Something went wrong");
@@ -74,9 +77,9 @@ const Dashboard = () => {
       }
     }
 
-    useEffect( () => {
-     dispatch(getToursByUser(userId))
-    }, [])
+    // useEffect( () => {
+    //  dispatch(getToursByUser(userId))
+    // }, [])
 
     useEffect( () => {
       if(!user) {
@@ -86,10 +89,14 @@ const Dashboard = () => {
 
 
     const { isLoading, isError, data, error } = useQuery('dashboard', () => getToursByUserApi(userId));
+    // console.log(isError, error);
     if (isLoading) {
       return <h1 className='mt-5'>Loading...</h1>
     }
      const userTours = data?.data?.userTours;
+     console.log(userTours);
+
+
 
 
   return (
