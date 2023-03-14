@@ -119,6 +119,20 @@ export const updateTour = createAsyncThunk(
     }
 );
 
+export const getToursBySearch = createAsyncThunk(
+    "tours/getToursBySearch",
+    async (search, { rejectWithValue}) => {
+        try {
+            const response = await api.searchTourApi(search);
+            // console.log(response);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error?.response?.data)
+        }
+    }
+);
+
+
 
 const initialState = {
     tour: {},

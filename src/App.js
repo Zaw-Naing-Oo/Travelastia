@@ -5,6 +5,7 @@ import Navbar from './components/Navbar'
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import SearchResult from './pages/SearchResult';
 import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch } from 'react-redux';
 import { setUser } from './redux/features/authSlice';
@@ -34,13 +35,15 @@ const App = () => {
       <Navbar />
       <Routes>
         <Route path='/' element = { <Navigate to='/tours' /> } />
-        <Route path='/tours' element={ <Home /> } />
+        
+        <Route path='/tours' element={ <Home /> }>
+          <Route path='search' element={ <Home /> } />
+        </Route>
+          <Route path='/tours/detail/:id' element={ <TourDetail /> } />
+        <Route path='/tours/createOrEdit/:id?' element={ <AddTour /> } />
+        <Route path='tours/dashboard/:id' element={ <Dashboard /> } />
         <Route path='/login' element={ <Login /> } />
         <Route path='/register' element={ <Register /> } />
-        <Route path='/tours/createOrEdit/:id?' element={ <AddTour /> } />
-        <Route path='/tour/:id' element={ <AddEditTour /> } />
-        <Route path='/tours/detail/:id' element={ <TourDetail /> } />
-        <Route path='/tours/dashboard/:id' element={ <Dashboard /> } />
         <Route path='*' element={ <Error /> } />
       </Routes>
     </>

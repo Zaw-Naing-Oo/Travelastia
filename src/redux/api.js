@@ -32,3 +32,5 @@ export const deleteTourApi = (id) => API.delete(`/tours/dashboard/${id}`);
 
 export const updateTourApi = (id, updatedTourData) => API.patch(`/tours/createOrEdit/${id}`, updatedTourData);
 
+export const searchTourApi = (searchQuery) => API.get(`tours/search?searchQuery=${searchQuery}`);
+
