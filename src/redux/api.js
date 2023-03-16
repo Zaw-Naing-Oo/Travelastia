@@ -20,7 +20,7 @@ export const createTour = (updatedFormData) => API.post("/tours/createOrEdit", u
     headers: { 'Content-Type' : 'multipart/form-data'}
 });
 
-export const getTours = () => API.get("/tours");
+export const getTours = (page) => API.get(`/tours?page=${page}`);
 
 export const getTour = (id) => API.get(`/tours/detail/${id}`);
 
