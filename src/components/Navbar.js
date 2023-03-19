@@ -45,7 +45,7 @@ function Navbar() {
   // const user = JSON.parse(localStorage.getItem("profile"));
 
   const userId = user?.result?._id;
-  console.log(user)
+  // console.log(user)
   const token = user?.token;
   
   if(token) {

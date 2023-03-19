@@ -34,3 +34,5 @@ export const updateTourApi = (id, updatedTourData) => API.patch(`/tours/createOr
 
 export const searchTourApi = (searchQuery) => API.get(`tours/search?searchQuery=${searchQuery}`);
 
+export const likeTour = (tourId, userId) => API.post(`tours/likes/${tourId}`, { userId });
+

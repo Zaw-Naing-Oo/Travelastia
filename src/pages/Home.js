@@ -18,7 +18,6 @@ const Home = () => {
   const location = useLocation();
   const searchQuery = new URLSearchParams(location.search).get('searchQuery');
   const urlPage = new URLSearchParams(location.search).get('page') || 1;
-  console.log(searchQuery)
 
 
   // for searched tour data

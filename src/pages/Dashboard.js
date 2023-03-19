@@ -94,7 +94,7 @@ const Dashboard = () => {
       return <h1 className='mt-5'>Loading...</h1>
     }
      const userTours = data?.data?.userTours;
-     console.log(userTours);
+    //  console.log(userTours);
 
 
 
