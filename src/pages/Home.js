@@ -29,7 +29,6 @@ const Home = () => {
   // For all Tours data
   const { isLoading, isError, data, error } = useQuery(['tours',page], () => getTours(page));
   const tours = data?.data?.allTours;
-  console.log(tours)
   const totalPages = data?.data?.totalPages;
 
   useEffect(() => {

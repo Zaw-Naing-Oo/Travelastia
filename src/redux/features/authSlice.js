@@ -47,7 +47,7 @@ export const googleLogin = createAsyncThunk(
 const initialState = {
     user: null,
     error: "",
-    loading: false
+    loading: false,
 };
 
 export const authSlice = createSlice({

@@ -21,10 +21,6 @@ export const createTour = createAsyncThunk(
             }
             updatedFormData.append("userId", userId)
 
-            //  for (var pair of updatedFormData.entries()) {
-            //     console.log(pair[0]+ ', ' + pair[1]); 
-            // }
-            // return;
 
             const response = await api.createTour(updatedFormData);
             // console.log(response);
@@ -145,12 +141,12 @@ const initialState = {
 export const tourSlice = createSlice({
     name: 'tour',
     initialState,
-    // reducers: {
-    //     create :(state,action) => {
-    //        console.log(action.payload);
-    //        state.tours = [...state.tours, action.payload];
-    //     }
-    // },
+    reducers: {
+        // create :(state,action) => {
+        //    console.log(action.payload);
+        //    state.tours = [...state.tours, action.payload];
+        // }
+    },
     extraReducers: {
         [createTour.pending] : (state, action) => {
             state.loading = true

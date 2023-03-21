@@ -7,14 +7,12 @@ import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import { MuiChipsInput } from 'mui-chips-input'
 import Dropzone from 'react-dropzone';
-import {useSelector, useDispatch} from "react-redux"
-import {  createTour, updateTour } from '../redux/features/tourSlice';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from "react-toastify"
 import { useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { getTourToEdit } from '../redux/api';
-import imageCompression from 'browser-image-compression'
+import { useCreateTourMutation, useUpdateTourMutation } from '../react-query/query';
 
 
   const AddTour = () => {
@@ -22,11 +20,8 @@ import imageCompression from 'browser-image-compression'
     const [ tourData, setTourData ] = useState({ title: "", description: "", tags: [], imageFile: null, imageType: "", imageName: "" });
     const [chips, setChips] = React.useState([]);
     const submitButtonRef = useRef(null);
-    const [errors, setErrors] = useState({
-      
-    });
+    const [errors, setErrors] = useState({});
 
-    const dispatch = useDispatch();
     const navigate = useNavigate();
     const { id } = useParams();
     
@@ -34,9 +29,9 @@ import imageCompression from 'browser-image-compression'
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     
     const user = JSON.parse(localStorage.getItem("profile"));
-
+    const userId = user?.result?._id;
+    const name = user?.result?.name;
  
-    const { error, loading } = useSelector( state => ({...state?.tour}));
    
 
     const handleChange = (e) => {
@@ -46,7 +41,7 @@ import imageCompression from 'browser-image-compression'
     }))
     setErrors((prevErrors) => ({ ...prevErrors, [e.target.name]: '' }));
   
-  }
+    }
 
     //  handle react-input-chip
     const handleChip = (newChips) => {
@@ -58,6 +53,7 @@ import imageCompression from 'browser-image-compression'
       setErrors((prevErrors) => ({ ...prevErrors, tags: '' }));
     }
 
+    // react drop zone
     const onDrop = useCallback((acceptedFiles) => {
       const reader = new FileReader();
       reader.readAsDataURL(acceptedFiles[0]);
@@ -74,8 +70,12 @@ import imageCompression from 'browser-image-compression'
       // console.log(reader);
     }, [tourData]);
 
+    // query mutation
+    const createTourMutation = useCreateTourMutation();
+    const updateTourMutation = useUpdateTourMutation();
+
     // Submit Form
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
       e.preventDefault();
 
       const newErrors = {};
@@ -104,19 +104,17 @@ import imageCompression from 'browser-image-compression'
       } 
 
       if (tourData.title && tourData.description && tourData.tags && tourData.imageFile) {
-        // console.log(tourData);
         if(!id) {
-          const tocreateTour = { ...tourData, name: user?.result?.name, userId: user?.result?._id };
-          // console.log(tocreateTour);
-          // dispatch(create(updatedTourData));
-          dispatch(createTour({ tocreateTour, navigate, toast }))
+          const { title, description, imageFile, tags, imageType, imageName } = tourData;
+          await createTourMutation.mutateAsync({ title, description, imageFile, tags, imageType, name, imageName, userId });
+          toast.success("Create Post Successfully");
+          navigate("/");
         } else {
-          const toUpdateTour = { ...tourData, name: user?.result?.name };
-          // console.log(toUpdateTour);
-          // return;
-          dispatch(updateTour({ toUpdateTour, navigate, toast, id }))
+          const { title, description, imageFile, tags, imageType, imageName } = tourData;
+          await updateTourMutation.mutateAsync({ title, description, imageFile, tags, imageType, imageName, id });
+          toast.success("Update Post Successfully");
+          navigate("/");
         }
-
       }
       handleClear();
     };
@@ -141,11 +139,9 @@ import imageCompression from 'browser-image-compression'
         .then(async response => {
           const tour = await response?.data?.tour;
           console.log(tour);
-          // console.log(tour?.image);
 
           // For tags
           const fixTags = tour?.tags.join("").split(",");
-          // console.log(fixTags);
           const uniqueTags = new Set([...chips, ...fixTags]); 
           setChips(Array.from(uniqueTags));
 
@@ -160,11 +156,6 @@ import imageCompression from 'browser-image-compression'
       } 
     }, [id]);
 
-
-    // For Toast Error
-    useEffect(() => {
-      error && toast.error(error);
-    }, [error]);
 
     // protection for not login
     useEffect( () => {
@@ -183,6 +174,9 @@ import imageCompression from 'browser-image-compression'
       
       
       <Box component="form" autoComplete='off'  noValidate encType='multipart/form-data'>
+        { createTourMutation.error && (
+          <h5 onClick={ () => createTourMutation.reset()}>{ createTourMutation.error}</h5>
+        )}
         <Paper style={{ padding: 16 }} elevation={3}>
           <Grid container alignItems="flex-start" spacing={2}>
             <Grid item xs={12}>
@@ -268,7 +262,10 @@ import imageCompression from 'browser-image-compression'
                 ref={submitButtonRef}
                 onClick={handleSubmit}
               >
-                { id ? "Update" : "Submit"}
+                { id ? 
+                  updateTourMutation.isLoading ? "Updating..." : "Update"   
+                  : 
+                  createTourMutation.isLoading ? "Sending..." : "Submit" }
               </Button>
               <Button
                 variant="contained"
@@ -281,7 +278,6 @@ import imageCompression from 'browser-image-compression'
           </Grid>
         </Paper>
       </Box>
-      {/* <img src={tourImage} /> */}
     </Box>
   )}
 
