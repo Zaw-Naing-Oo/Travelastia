@@ -15,8 +15,8 @@ const SingleCard = (props) => {
   const userId = useSelector(state => state?.auth?.user?.result?._id);
   const [isLiked, setIsLiked] = useState(Boolean(tour?.likes?.[userId]));
   const navigate = useNavigate();
-  console.log(tour)
-  console.log(isLiked)
+  // console.log(tour)
+  // console.log(isLiked)
 
 
   const tag = tour?.tags.join(",").split(",").map( (tag,index) => (

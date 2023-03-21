@@ -36,3 +36,7 @@ export const searchTourApi = (searchQuery) => API.get(`tours/search?searchQuery=
 
 export const likeTour = (tourId, userId) => API.post(`tours/likes/${tourId}`, { userId });
 
+export const createComment = (tourId, user, comment) => API.post(`tours/detail/comment/${tourId}`, { user, comment });
+
+
+

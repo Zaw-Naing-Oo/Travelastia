@@ -1,18 +1,20 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import Box from "@mui/material/Box"
 import Grid from "@mui/material/Grid"
 import Typography  from "@mui/material/Typography"
+import Button from "@mui/material/Button"
 import Card from "@mui/material/Card"
 import CardMedia from "@mui/material/CardMedia"
 import Chip from '@mui/material/Chip'
 import  Breadcrumbs  from '@mui/material/Breadcrumbs'
+import Box from "@mui/material/Box"
+import TextField from '@mui/material/TextField'
 import Link from "@mui/material/Link"
 import useMediaQuery from '@mui/material/useMediaQuery';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { useTheme } from '@mui/material/styles';
-import { useQuery } from 'react-query';
-import { getTour } from '../redux/api';
+import { useQuery, useMutation } from 'react-query';
+import { getTour, createComment } from '../redux/api';
 import { useSelector } from 'react-redux'
 import { Buffer } from 'buffer'
 import moment from "moment"
@@ -21,12 +23,17 @@ import "moment-timezone"
 
 
 const TourDetail = () => {
+  const [comment, setComment] = useState('');
    const { id } = useParams();
    const theme = useTheme();
    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+   const user = useSelector( state => state?.auth?.user?.result);
 
    const { isLoading, isError, data, error } = useQuery('tour', () =>  getTour(id));
-  const tour = data?.data?.tour;
+   const tour = data?.data?.tour;
+   console.log(tour)
+
+   const createCommentMutation = useMutation((comment) => createComment(id, user, comment ));
 
     const tag =tour?.tags.join(",").split(",").map( (tag,index) => (
     <Chip key={index} label={ tag } color="primary" sx={{ margin: "0.3rem"}} />
@@ -34,6 +41,13 @@ const TourDetail = () => {
 
    if (isLoading) {
     return <span>Loading...</span>
+  }
+
+
+  const handleComment = (e) => {
+    e.preventDefault();
+    createCommentMutation.mutate(comment);
+    setComment('');
   }
 
   return (
@@ -73,6 +87,18 @@ const TourDetail = () => {
             {tour?.description }
             </Typography>
           </Grid>
+          { user && (
+            <Box component="form" onSubmit={handleComment}>
+              <TextField 
+                id="outlined-basic" 
+                label="Comment" 
+                variant="outlined" 
+                value={comment}
+                onChange={ e => setComment(e.target.value)}
+              />
+              <Button type="submit" variant="contained" color="primary">Submit</Button>
+            </Box>
+          )}
         </Grid>      
     </Box>
     </>
