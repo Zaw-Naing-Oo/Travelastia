@@ -5,12 +5,10 @@ import Navbar from './components/Navbar'
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import SearchResult from './pages/SearchResult';
 import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch } from 'react-redux';
 import { setUser } from './redux/features/authSlice';
 import AddTour from './pages/AddTour';
-import AddEditTour from './pages/AddEditTour';
 import CssBaseline from "@mui/material/CssBaseline";
 import TourDetail from './pages/TourDetail';
 import Dashboard from './pages/Dashboard';
@@ -22,7 +20,6 @@ const App = () => {
 
   const user = JSON.parse(localStorage.getItem("profile"));
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   useEffect( () => {
     dispatch(setUser(user));
