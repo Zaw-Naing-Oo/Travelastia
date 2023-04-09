@@ -1,5 +1,39 @@
 import { useMutation } from 'react-query';
 import * as api from "../redux/api"
+import { setUser } from '../redux/features/authSlice';
+import { useDispatch } from 'react-redux';
+
+export const useLogin = () => {
+   const dispatch = useDispatch();
+  const signIn = async (formValue) => {
+   const response = await api.signIn(formValue);
+   dispatch(setUser(response?.data));
+   return response.data;
+  }
+  const { mutate, isLoading, isError } = useMutation(signIn);
+
+  return {
+   mutate,
+   isLoading,
+   isError
+ };
+}
+
+export const useRegister = () => {
+   const dispatch = useDispatch();
+   const signUp = async (formValue) => {
+   const response = await api.signUp(formValue);
+   dispatch(setUser(response?.data));
+   return response.data;
+  }
+  const { mutate, isLoading, isError } = useMutation(signUp);
+
+  return {
+   mutate,
+   isLoading,
+   isError
+ };
+}
 
 export const useCreateTourMutation = () => {
   return useMutation(async ({ title, description, imageFile, tags, imageType, name, imageName, userId }) => {
@@ -36,4 +70,4 @@ export const useUpdateTourMutation = () => {
        const response = await api.updateTourApi(id, updatedFormData); 
        return response.data;
     });
-  };
+};

@@ -1,8 +1,14 @@
 body {
   margin: 0;
+  padding: 0;
   font-family: Roboto, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+
+  background-color: #f5f5f5 !important;
+  color: #333333;
+}
+
+.custom-mdb-input:focus {
+  border-color: #1de9b6 !important;
 }
 
 .cascading-right {

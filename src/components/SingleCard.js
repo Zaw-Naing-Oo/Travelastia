@@ -1,12 +1,22 @@
-import { Button, Card, CardActions, CardContent, CardMedia, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
+import  Button from '@mui/material/Button'
+import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import CardMedia from '@mui/material/CardMedia'
+import Typography from '@mui/material/Typography'
 import { Buffer } from 'buffer'
 import { useNavigate } from 'react-router-dom'
 import IconButton from '@mui/material/IconButton';
-import FavoriteIcon from '@mui/icons-material/Favorite';
+import Tooltip from '@mui/material/Tooltip';
 import { useMutation } from 'react-query';
 import { useSelector } from 'react-redux';
 import * as api  from "../redux/api";
+
+// icons
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import ReadMoreIcon from '@mui/icons-material/ReadMore';
 
 
 
@@ -19,9 +29,10 @@ const SingleCard = (props) => {
   // console.log(isLiked)
 
 
+  // console.log(tour?.tags);
   const tag = tour?.tags.join(",").split(",").map( (tag,index) => (
     <Typography key={index} gutterBottom variant="body2" mr={1} sx={{ display: "flex"}}>
-        { `#${tag}`}
+        { `${tag}`}
     </Typography>
   ));
 
@@ -72,37 +83,28 @@ const SingleCard = (props) => {
   
 
   return (
-    <Card
-      sx={{
-        backgroundColor: "#f5f5f5",
-        boxShadow: "0px 3px 3px rgba(46, 125, 50, 0.25)",
-        border: "1px solid rgba(46, 125, 50, 0.5)",
-        color: "#222222",
-      }}
-    >
+    <Card sx={{ boxShadow: "none", position: "relative", borderRadius: "25px"}}>
       <CardMedia
-        sx={{ height: 150 }}
+        sx={{ height: 350, borderTopLeftRadius: "20px", borderTopRightRadius: "20px" }}
         image={`data:${tour?.image?.contentType};base64,${Buffer.from(tour?.image?.data).toString('base64')}`}
         title={props?.tour?.title || ""}
-        />
-      <CardContent 
-        sx={{ height: 140 }}
-      >
-        <Typography gutterBottom variant="h4">
-          { tour?.title }
-        </Typography>
-        <div className='d-flex text-black-50'>
-          { tag }
-        </div>
-        <Typography variant="body2" component="h6" color="black">
-          { strCut(tour?.description)}
-        </Typography>
-      </CardContent>
-      <CardActions>
-      <Button variant="outlined" size='small' onClick={ () => navigate(`detail/${tour?._id}`)}>See More</Button>
-      <IconButton aria-label="favorite" onClick={ () => handleLike(tour?._id)}>
-         { isLiked ? <FavoriteIcon sx={{ color: "red" }} /> : <FavoriteIcon />}
-      </IconButton>
+      />
+      <Typography gutterBottom variant="h4" sx={{ position: "absolute", color: "white", bottom: 90, padding: 2, fontWeight: 700, fontSize: "25px"}}>
+        { tour?.title }
+      </Typography>
+      <Typography sx={{ position: "absolute", bottom: 70, padding: 1, color: "white", fontWeight: 700, fontSize: "15px"}}>
+        <LocationOnIcon />
+        { tour?.tags?.[0]}
+      </Typography>
+      <CardActions sx={{ borderBottomLeftRadius: "20px", borderBottomRightRadius: "20px", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+        <IconButton aria-label="favorite" onClick={ () => handleLike(tour?._id)}>
+          { isLiked ? <FavoriteIcon sx={{ color: "red" }} /> : <FavoriteIcon />}
+        </IconButton>
+        <Button size='small' onClick={ () => navigate(`detail/${tour?._id}`)}>
+        <Tooltip title="Read More">
+         <ReadMoreIcon sx={{ color: "#1de9b6" }} />  
+        </Tooltip>
+      </Button>
       </CardActions>
     </Card>
   )

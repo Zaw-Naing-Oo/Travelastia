@@ -29,9 +29,6 @@ const theme = createTheme({
           fontSize: 14,
         },
     },
-    customBorder: {
-      border: "1px solid red"
-    }
   });
 
 export default theme;

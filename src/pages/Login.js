@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   MDBBtn,
   MDBContainer,
@@ -7,21 +7,26 @@ import {
   MDBCardImage,
   MDBRow,
   MDBCol,
-  MDBInput,
-  MDBValidation,
-  MDBValidationItem,
   MDBSpinner,
   MDBCardFooter,
-  MDBIcon
 }
 from 'mdb-react-ui-kit';
 import Box from '@mui/material/Box'
-import { useSelector, useDispatch } from 'react-redux';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { googleLogin, login, setUser } from '../redux/features/authSlice';
-import { toast } from "react-toastify"
+import { googleLogin } from '../redux/features/authSlice';
 import { GoogleLogin } from '@react-oauth/google';
 import  jwt_decode from 'jwt-decode'
+import { toast } from "react-toastify"
+
+
+// react query
+import { useLogin } from '../react-query/query';
+
+// image
+import paris from "../images/paris.jpg"
 
 const Login = () => {
 
@@ -39,9 +44,7 @@ const Login = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
-
-  const { error, loading } = useSelector( state => ({...state?.auth}));
+  const { mutate, isLoading } = useLogin();
 
   const onChange = (e) => {
     if(formValue.email) {
@@ -52,11 +55,6 @@ const Login = () => {
     }
     setFormValue({ ...formValue, [e.target.name]: e.target.value });
   };
-
-
-  useEffect(() => {
-    error && toast.error(error);
-  }, [error]);
 
 
   /* Form Validation */
@@ -83,14 +81,23 @@ const Login = () => {
     return true;
   };
 
+
   /* Submitting Form */
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (validateForm()) {
-      console.log(formValue);
-      dispatch(login({formValue, navigate, toast }))
-      setFormValue({ email: '', password: ''})
+
+      await mutate(formValue, {
+        onSuccess: (data) => {
+          toast.success('Login Successfully');
+          navigate('/');
+          setFormValue({ email: '', password: ''})
+        },
+        onError: (error) => {
+          toast.error(error?.response?.data?.message);
+        }
+      })
     }
   };
 
@@ -103,66 +110,71 @@ const Login = () => {
 
 
   return (
-    <MDBContainer className='my-5 p-lg-5'>
-      <MDBCard>
+    <MDBContainer className='p-5'>
+      <MDBCard style={{ background : "#78909c" }} className="my-5">
+        <MDBRow className='g-0 d-flex align-items-center shadow-1-strong' >
 
-        <MDBRow className='g-0 d-flex align-items-center shadow-1-strong'>
-
-          <MDBCol md='4'>
-            <MDBCardImage src='https://mdbootstrap.com/img/new/ecommerce/vertical/004.jpg' alt='phone' className='rounded-t-5 rounded-tr-lg-0' fluid />
+          <MDBCol md='6' className=''>
+            <MDBCardImage src={paris} alt='phone' className='rounded-t-5 rounded-tr-lg-0' fluid />
           </MDBCol>
 
-          <MDBCol md='8'>
+          <MDBCol md='6'>
+            <MDBCardBody className='p-5 text-center'>
 
-            <MDBCardBody className='p-5'>
-
-            <h2 className="fw-bold mb-4 text-center">Signin now</h2>
-
+              <Typography component="a" href='/' sx={{ fontWeight: 800, fontSize: "2.5rem", color: "#1de9b6", '&:hover': { color: "#64ffda"}, }}>Travelastia</Typography>
+              <h2 className="fw-bold mb-4 mt-4 text-center">Signin Now</h2>
 
               <Box component="form" autoComplete='off' encType='multipart/form-data' onSubmit={handleSubmit}>
-                <MDBValidation>
-                  <MDBValidationItem invalid="Please enter email">
-                    <MDBInput
-                      value={formValue.email}
-                      wrapperClass=''
-                      label='Email address'
-                      id='validationCustom01'
-                      type='email'
-                      required
-                      name='email'
-                      onChange={onChange}
-                      onKeyDown={handleKeyDown}
-                      feedback='Please enter a valid email address'
+                  <TextField 
+                    label="Email" 
+                    required
+                    autoComplete='off'
+                    type="email"
+                    name="email"
+                    value={formValue.email}
+                    onChange={onChange}
+                    onKeyDown={handleKeyDown}
+                    sx={{
+                      width: "100%",
+                      "& .MuiInputLabel-root.Mui-focused": {
+                        color: "#1de9b6"  
+                      },
+                      "& .MuiOutlinedInput-root.Mui-focused  .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#1de9b6"  
+                      }
+                    }}
                   />
-                    <p className='error-message text-danger'>{validationError.emailError}</p>
-                  </MDBValidationItem>
+                  <p className='error-message text-danger d-flex'>{validationError.emailError}</p>
 
-                  <MDBValidationItem className='mb-4' invalid="Please enter password">
-                    <MDBInput
-                      wrapperClass=''
-                      label='Password'
-                      id='validationCustom02'
-                      type='password'
-                      value={formValue.password}
-                      name='password'
-                      required
-                      onChange={onChange}
-                      onKeyDown={handleKeyDown}
-                      feedback='Password must be at least 8 characters long'
-                      autoComplete='off'
-                    />
-                    <p className='error-message text-danger'>{validationError.passwordError}</p>
-                  </MDBValidationItem>
-                </MDBValidation>
+                  <TextField 
+                    label="Password" 
+                    color="primary"  
+                    required
+                    autoComplete='off'
+                    type="password"
+                    name="password"
+                    value={formValue.password}
+                    onChange={onChange}
+                    onKeyDown={handleKeyDown}
+                    sx={{
+                      width: "100%",
+                      "& .MuiInputLabel-root.Mui-focused": {
+                        color: "#1de9b6"  
+                      },
+                      "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#1de9b6"
+                      }
+                    }}
+                  />
+                  <p className='error-message text-danger d-flex'>{validationError.passwordError}</p>
 
-                <MDBBtn ref={submitButtonRef} className="mb-4 w-100" type='submit'>
-                  { loading && <MDBSpinner style={{ width: '17px', height: '17px'}} role='status' size="sm" color="info" tag="span" className="me-2" /> }
+                <MDBBtn ref={submitButtonRef} className="mb-4 w-100 p-3" type='submit' style={{ background: "#1de9b6", fontSize: "15px"}}>
+                  { isLoading && <MDBSpinner style={{ width: '17px', height: '17px'}} role='status' size="sm" tag="span" className="me-2" /> }
                   Sign in
                 </MDBBtn>
               </Box>
 
               <div className="text-center">
-
                 <p>or sign up with:</p>
 
                  {/* Google Login  */}
@@ -174,7 +186,7 @@ const Login = () => {
                       // console.log(formValue);
                       dispatch(googleLogin({decodeGoogleToken, navigate, toast }));
                     }}
-                    shape="circle"
+                    shape="square"
                     type='icon'
                     theme='outline'
                     logo_alignment='center'
@@ -187,15 +199,14 @@ const Login = () => {
 
             </MDBCardBody>
 
-            <MDBCardFooter className='text-center'>
+            <MDBCardFooter className='text-center border-0'>
               <p className='d-inline me-2'>
                  Do not  have an account? 
                 </p>
-              <Link to="/register">
+              <Link to="/register" style={{ color: "#1de9b6", '&:hover': { color: "#64ffda"}, }}>
                 Register
               </Link>
             </MDBCardFooter>
-
           </MDBCol>
 
         </MDBRow>
@@ -207,4 +218,3 @@ const Login = () => {
 
 export default Login;
 
-{/* <MDBContainer className="p-3 my-5 d-flex flex-column w-50"> */}

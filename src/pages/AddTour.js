@@ -14,6 +14,9 @@ import { useTheme } from '@mui/material/styles';
 import { getTourToEdit } from '../redux/api';
 import { useCreateTourMutation, useUpdateTourMutation } from '../react-query/query';
 
+// images
+import city from "../images/city.jpg"
+
 
   const AddTour = () => {
 
@@ -90,7 +93,7 @@ import { useCreateTourMutation, useUpdateTourMutation } from '../react-query/que
       }
 
       if (chips.length === 0) {
-        newErrors.tags = 'At least one tag is required';
+        newErrors.tags = 'At least one tag country is required';
         
       }
 
@@ -167,118 +170,145 @@ import { useCreateTourMutation, useUpdateTourMutation } from '../react-query/que
   
 
     return (
-    <Box sx={{margin: 'auto', marginTop: '3rem', maxWidth: 800, padding: isMobile ? 6 : 10 }}>
-      <Typography variant="h4" align="center" component="h1" gutterBottom>
-        { id ? "Update Tour" : "Add tour"}
-      </Typography>
-      
-      
-      <Box component="form" autoComplete='off'  noValidate encType='multipart/form-data'>
-        { createTourMutation.error && (
-          <h5 onClick={ () => createTourMutation.reset()}>{ createTourMutation.error}</h5>
-        )}
-        <Paper style={{ padding: 16 }} elevation={3}>
-          <Grid container alignItems="flex-start" spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth 
-                required
-                name="title"
-                type="text"
-                label="Title"
-                value={ tourData?.title || ""}
-                onChange={handleChange}
-                onKeyDown={handleKeyDown}
-                error={errors.title}
-                helperText={errors.title ? "Title is Required" : ""}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                name="description"
-                fullWidth
-                required
-                multiline
-                rows={2}
-                value={ tourData?.description || ""}
-                label="Description"
-                onChange={handleChange}
-                onKeyDown={handleKeyDown}
-                error={errors.description}
-                helperText={errors.description}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <MuiChipsInput 
-                value={tourData.tags.map(chip => chip)} 
-                fullWidth
-                label="Tags"
-                onChange={handleChip}
-                error={errors.tags}
-                helperText={errors.tags}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Dropzone
-                acceptedFiles=".jpg,.jpeg,.png"
-                accept="image/*"
-                multiple={false}
-                onDrop={onDrop}
-              >
-                {({ getRootProps, getInputProps }) => (
-                    <Box 
-                      {...getRootProps({className: 'dropzone'})}
-                      sx={{
-                        border: "2px dashed black",
-                        padding: "1rem",
-                        display: "flex",
-                        alignItems: "center",
-                        position: "relative",
-                      }}
-                      >
-                      <input {...getInputProps()} />
-                      {!tourData?.imageName ? (
-                        <p className='text-black-50 m-0'>Add Picture Here</p>
-                      ) : (
-                        <Box>
-                          <Typography>{tourData?.imageName}</Typography>
+      <Box sx={{ minHeight: "100vh", background : `url(${city})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", }}>
+        <Box sx={{margin: 'auto', maxWidth: 600, padding: isMobile ? 6 : 7, }}>
+          <Typography variant="h1" align="center"  gutterBottom sx={{ marginBottom: "2rem", fontStyle: "oblique"}}>
+            { id ? "Update You Post" : "Share Your Experience"}
+          </Typography>
+          
+          
+          <Box component="form" autoComplete='off' noValidate encType='multipart/form-data' >
+            { createTourMutation.error && (
+              <h5 onClick={ () => createTourMutation.reset()}>{ createTourMutation.error}</h5>
+            )}
+            <Paper elevation={3} sx={{ padding: isMobile ? 2 : 5}} >
+              <Grid container alignItems="flex-start" spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth 
+                    required
+                    name="title"
+                    type="text"
+                    label="Title"
+                    value={ tourData?.title || ""}
+                    onChange={handleChange}
+                    onKeyDown={handleKeyDown}
+                    error={errors.title}
+                    helperText={errors.title ? "Title is Required" : ""}
+                    sx={{ 
+                      "& .MuiInputLabel-root.Mui-focused": {
+                      color: "#1de9b6"  
+                      },
+                      "& .MuiOutlinedInput-root.Mui-focused  .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#1de9b6"  
+                      }
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    name="description"
+                    fullWidth
+                    required
+                    multiline
+                    rows={2}
+                    value={ tourData?.description || ""}
+                    label="Description"
+                    onChange={handleChange}
+                    onKeyDown={handleKeyDown}
+                    error={errors.description}
+                    helperText={errors.description}
+                    sx={{ 
+                      "& .MuiInputLabel-root.Mui-focused": {
+                      color: "#1de9b6"  
+                      },
+                      "& .MuiOutlinedInput-root.Mui-focused  .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#1de9b6"  
+                      }
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <MuiChipsInput 
+                    value={tourData.tags.map(chip => chip)} 
+                    fullWidth
+                    label="Country Tags"
+                    onChange={handleChip}
+                    error={errors.tags}
+                    helperText={errors.tags}
+                    sx={{ 
+                      "& .MuiInputLabel-root.Mui-focused": {
+                      color: "#1de9b6"  
+                      },
+                      "& .MuiOutlinedInput-root.Mui-focused  .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#1de9b6"  
+                      }
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Dropzone
+                    acceptedFiles=".jpg,.jpeg,.png"
+                    accept="image/*"
+                    multiple={false}
+                    onDrop={onDrop}
+                  >
+                    {({ getRootProps, getInputProps }) => (
+                        <Box 
+                          {...getRootProps({className: 'dropzone'})}
+                          sx={{
+                            border: "2px dashed black",
+                            padding: "1rem",
+                            display: "flex",
+                            alignItems: "center",
+                            position: "relative",
+                          }}
+                          >
+                          <input {...getInputProps()} />
+                          {!tourData?.imageName ? (
+                            <p className='text-black-50 m-0'>Add Picture Here</p>
+                          ) : (
+                            <Box>
+                              <Typography>{tourData?.imageName}</Typography>
+                            </Box>
+                          )}
+                          {errors.imageFile && (
+                            <Typography color="error" variant="caption" sx={{ position: "absolute", left: 10,  bottom: -25}}>
+                              {errors.imageFile}
+                            </Typography>
+                          )}
                         </Box>
                       )}
-                      {errors.imageFile && (
-                        <Typography color="error" variant="caption" sx={{ position: "absolute", left: 10,  bottom: -25}}>
-                          {errors.imageFile}
-                        </Typography>
-                      )}
-                    </Box>
-                  )}
-              </Dropzone>
-            </Grid>
-            <Grid item style={{ marginTop: 20 }}>
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-                className='me-3'
-                ref={submitButtonRef}
-                onClick={handleSubmit}
-              >
-                { id ? 
-                  updateTourMutation.isLoading ? "Updating..." : "Update"   
-                  : 
-                  createTourMutation.isLoading ? "Sending..." : "Submit" }
-              </Button>
-              <Button
-                variant="contained"
-                color="error"
-                onClick={handleClear}
-              >
-                Clear
-              </Button>
-            </Grid>
-          </Grid>
-        </Paper>
+                  </Dropzone>
+                </Grid>
+                <Grid item style={{ marginTop: 20 }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    className='me-3'
+                    ref={submitButtonRef}
+                    onClick={handleSubmit}
+                    sx={{ background: "#26a69a", color: "white", "&:hover" : { boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.1)", background: "#4db6ac", }}}
+                  >
+                    { id ? 
+                      updateTourMutation.isLoading ? "Updating..." : "Update"   
+                      : 
+                      createTourMutation.isLoading ? "Creating..." : "Create" }
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={handleClear}
+                  >
+                    Clear
+                  </Button>
+                </Grid>
+              </Grid>
+            </Paper>
+          </Box>
+        </Box>
       </Box>
-    </Box>
   )}
 
   export default AddTour

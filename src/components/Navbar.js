@@ -1,39 +1,44 @@
-import * as React from 'react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
-import AdbIcon from '@mui/icons-material/Adb';
 import Drawer from '@mui/material/Drawer';
-import { styled, alpha, useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InputBase from '@mui/material/InputBase';
+import { styled, alpha, useTheme } from '@mui/material/styles';
 import { useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/features/authSlice';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import SearchIcon from '@mui/icons-material/Search';
-import { useMediaQuery } from '@mui/material';
 import { getToursBySearch } from '../redux/features/tourSlice';
 import decode from "jwt-decode"
+
+// icons
+import TravelExploreIcon from '@mui/icons-material/TravelExplore';
+import SearchIcon from '@mui/icons-material/Search';
+import MenuIcon from '@mui/icons-material/Menu';
+import AddIcon from '@mui/icons-material/Add';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
+
+// images(svg,png)
+import Travel from "../images/Travel.svg"
 
 
 
 
 function Navbar() {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [ search, setSearch ] = React.useState('');
   const navigate = useNavigate();
   const disaptch = useDispatch();
   const theme = useTheme();
@@ -53,11 +58,7 @@ function Navbar() {
     }
   }
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const [state, setState] = React.useState({
+  const [state, setState] = useState({
     left: false,
   });
 
@@ -70,47 +71,51 @@ function Navbar() {
     setState({ left: open });
   };
 
-  /* For Drawer */
+  /* For MObile Drawer */
   const list = (anchor) => (
   <Box
     role="presentation"
     onClick={toggleDrawer(false)}
     onKeyDown={toggleDrawer(false)}
+    // sx={{ background: "#4db6ac"}}
   >
+    { userId && <Typography component="h1" paddingX={5} paddingY={4} sx={{ fontSize: "25px", fontWeight: 600, fontStyle: "oblique", backgroundColor: "#00695c", color: "white"}}>{ user?.result?.name }</Typography> }
     <List>
         <ListItem className='d-block'>
-          <ListItemButton>
-            <ListItemIcon>
-              <InboxIcon /> 
+          <ListItemButton 
+             onClick={() => {
+                user ? navigate("/tours/createOrEdit") :
+                      navigate("/login");
+              }}
+          >
+            <ListItemIcon sx={{ display: "contents"}}>
+              <AddIcon /> 
             </ListItemIcon>
-            <ListItemText primary="Add Tour" onClick={() => {
-              user ? navigate("/tours/createOrEdit") :
-                     navigate("/login");
-            }}/>
+            <ListItemText primary="Add Post" sx={{ marginLeft: "10px"}} />
           </ListItemButton>
 
-          { user && (
+          { userId && (
              <ListItemButton onClick={ () => navigate(`tours/dashboard/${userId}`)}>
-             <ListItemIcon>
-               <InboxIcon /> 
+             <ListItemIcon  sx={{ display: "contents"}}>
+               <DashboardIcon /> 
              </ListItemIcon>
-             <ListItemText primary="Dashboard" />
+             <ListItemText primary="Dashboard" sx={{ marginLeft: "10px"}}/>
            </ListItemButton>
           )}
 
-          { user ? (
+          { userId ? (
           <ListItemButton onClick={() => disaptch(logout()) }>
-            <ListItemIcon>
-              <InboxIcon /> 
+            <ListItemIcon sx={{ display: "contents"}} >
+              <LogoutIcon /> 
             </ListItemIcon>
-            <ListItemText primary="Logout" />
+            <ListItemText primary="Logout" sx={{ marginLeft: "10px"}} />
           </ListItemButton>
           ) : (
           <ListItemButton onClick={ () => navigate("/login") }>
-            <ListItemIcon>
-              <InboxIcon /> 
+            <ListItemIcon sx={{ display: "contents"}} >
+              <LoginIcon /> 
             </ListItemIcon>
-            <ListItemText primary="Login" />
+            <ListItemText primary="Login" sx={{ marginLeft: "10px"}} />
           </ListItemButton>
 
           ) }
@@ -142,7 +147,7 @@ function Navbar() {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 1,
+    left: "0%",
   }));
 
   const StyledInputBase = styled(InputBase)(({ theme }) => ({
@@ -153,7 +158,6 @@ function Navbar() {
       paddingLeft: `calc(1em + ${theme.spacing(4)})`,
       transition: theme.transitions.create('width'),
       width: '100%',
-      zIndex: 0, 
       [theme.breakpoints.up('sm')]: {
         width: '12ch',
         '&:focus': {
@@ -175,16 +179,14 @@ function Navbar() {
     }
   };
 
-  
-
-
+ 
   return (
-    <AppBar position="sticky" sx={{ background: "#2e7d32"}}>
+    <AppBar position="sticky" sx={{ background: "#009688"}}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
 
-          {/* For Mobile start */}
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+          {/* Desktop start*/}
+          <TravelExploreIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
           <Typography
             variant="h6"
             noWrap
@@ -195,44 +197,28 @@ function Navbar() {
               display: { xs: 'none', md: 'flex' },
               fontFamily: 'monospace',
               fontWeight: 700,
+              fontSize: "20px",
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
+              '&:hover': { color: "#64ffda"},
             }}
           >
-            LOGO
+            Travelastia
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-            <IconButton
-              size="large"
-              onClick={toggleDrawer(true)}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Drawer open={state.left} onClose={toggleDrawer(false)}>
-              {list()}
-            </Drawer>
-         </Box>
-          {/* For Mobile end */}
 
-
-          {/* For Desktop start */}
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
              <Button
-                // to="/tours/createOrEdit"
                 className="text-white m-2"
                  onClick={ () => {
-                  user ? navigate("/tours/createOrEdit")
+                  user?.result?._id ? navigate("/tours/createOrEdit")
                        : navigate("/login")
                  }}
               >
-                Add Tour
+                Add Post
               </Button>
-              { user && (
+              { user?.result?._id && (
                 <Button
-                  // to={`tours/dashboard/${userId}`}
                   onClick = { () => {
                     navigate(`tours/dashboard/${userId}`)
                   }}
@@ -242,51 +228,69 @@ function Navbar() {
                 </Button>
               )}
           </Box>
-
-
-          <Box sx={{ display: "flex", alignItems: "center"}}>
-
-            <Search onSubmit={handleSearchSubmit}>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                placeholder="Search…"
-                inputProps={{ 'aria-label': 'search' }}
-                // value={ search }
-                // onChange={(e) => setSearch(e.target.value)} 
-                inputRef={searchInputRef}
-              />
-            </Search>
-
-           { !isMobile && (
-            <>
-              { user?.result?._id ? (
-                <Button
-                className="text-white m-2"
-                  onClick={() => {
-                    disaptch(logout());
-                  }}
+          { !isMobile && (
+            <Box sx={{ display: "flex", alignItems: "center"}}>
+              <>
+                { userId ? (
+                  <Button
+                  className="text-white m-2"
+                    onClick={() => {
+                      disaptch(logout());
+                    }}
+                    >
+                    Logout
+                  </Button>
+                ) : (
+                  <Button
+                  onClick={ () => navigate("/login")}
+                  className="text-white m-2"
                   >
-                  Logout
-                </Button>
-              ) : (
-                <Button
-                onClick={ () => navigate("/login")}
-                className="text-white m-2"
-                >
-                  Login
-                </Button>
-              )}
-              <Tooltip title={user?.result?.name}>
-                <IconButton sx={{ p: 0 }}>
-                  <Avatar>{ user?.result?.name[0] }</Avatar>
-                </IconButton>
-              </Tooltip>
-            </>
-           )}
-          </Box>
-          {/* For Desktop end */}
+                    Login
+                  </Button>
+                )}
+                <Tooltip title={user?.result?.name}>
+                  <IconButton sx={{ p: 0 }}>
+                    <Avatar>{ user?.result?.name[0] }</Avatar>
+                  </IconButton>
+                </Tooltip>
+              </>
+            </Box>
+          )}
+          {/* Desktop end */}
+
+           
+          {/* Mobile */}
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, width: "100%", alignItems: "center" }}>
+            <IconButton
+              size="large"
+              onClick={toggleDrawer(true)}
+              color="inherit"
+            >
+              <MenuIcon />
+            </IconButton>
+            <IconButton color='inherit' size='large' onClick={ () => navigate("/")} sx={{ margin: "auto"}}>
+             <TravelExploreIcon sx={{ display: { xs: 'flex', md: 'none', } }} />
+            </IconButton>
+            <Drawer open={state.left} onClose={toggleDrawer(false)}
+              sx={{ '& .MuiDrawer-paper': { background: '#b2dfdb' } }}
+            >
+              {list()}
+              <img src={Travel} style={{ width: "200px", margin: "auto"}} />
+            </Drawer>
+         </Box>
+
+         <Search onSubmit={handleSearchSubmit}>
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="Search…"
+              inputProps={{ 'aria-label': 'search' }}
+              inputRef={searchInputRef}
+            />
+          </Search>
+
+         {/* Mobile End */}
         </Toolbar>
       </Container>
     </AppBar>

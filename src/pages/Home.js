@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import Grid from "@mui/material/Grid"
 import Box from "@mui/material/Box"
-import { useSelector, useDispatch} from "react-redux"
-// import { getTours } from '../redux/features/tourSlice';
+import Skeleton from '@mui/material/Skeleton';
+import Pagination from '@mui/material/Pagination';
 import { getTours, searchTourApi } from '../redux/api';
 import { useQuery } from 'react-query';
-import SingleCard from '../components/SingleCard';
-import Pagination from '@mui/material/Pagination';
 import { useLocation, useNavigate } from 'react-router-dom';
+import Lottie from "lottie-react"
+import * as nodatafound from "../images/nodatafound.json"
+
+// components
+import SingleCard from '../components/SingleCard';
+
+// images
+import whiteBg from "../images/whiteBg.jpg"
 
 
 const Home = () => {
@@ -40,47 +46,65 @@ const Home = () => {
   const handleChange = (event, value) => {
      setPage(value);
      navigate(`/tours?page=${value}`);
-  }
-
-  
-  if (isLoading) {
-    return <h1 className='mt-5'>Loading...</h1>
-  }
-
-  if (isLoadingSearch) {
-    return <h1 className='mt-5'>Loading...</h1>
-  }
-  
+  }  
 
   return (
     <>
       {isSearch ? (
         <>
           { searchedTour?.length === 0 ? (
-            <h1>No data found</h1>
+            <Box sx={{
+              height: "100vh",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              background: `url(${whiteBg})`,
+            }}>
+              <Lottie animationData={nodatafound} loop={true} autoplay />
+            </Box>
           ) : (
-            <Box paddingX={8} paddingY={4} style={{margin: 'auto', marginTop: '4rem'}}>
-              <Grid container spacing={4}>
-                {searchedTour?.length > 0 &&  searchedTour.map((tour, index) => (
-                  <Grid key={index} item xs={12} sm={6} md={4} lg={3}>
-                    <SingleCard tour={tour} />
-                  </Grid>
-                ))}
-              </Grid>
+            <Box paddingX={8} paddingY={5} sx={{margin: 'auto', background: `url(${whiteBg})`, backgroundPosition: "center", backgroundSize: "cover", minHeight: "100vh"}}>
+              { isLoadingSearch ? (
+                <Grid container spacing={4}>
+                  {[...Array(8)].map((_, index) => (
+                    <Grid key={index} item xs={12} sm={6} md={4} lg={3}>
+                      <Skeleton variant="rounded" width={250} height={350} sx={{ borderRadius: "25px" }} />
+                    </Grid>
+                  ))}
+                </Grid>
+              ) : (
+                <Grid container spacing={4}>
+                  {searchedTour?.length > 0 &&  searchedTour.map((tour, index) => (
+                    <Grid key={index} item xs={12} sm={6} md={4} lg={3} position="relative">
+                      <SingleCard tour={tour} />
+                    </Grid>
+                  ))}
+                </Grid>
+              )}
           </Box>
           )}
         </>
       ) : (
         <>
-         <Box paddingX={8} paddingY={4} style={{margin: 'auto', marginTop: '4rem'}}>
-          <Grid container spacing={4}>
-            {tours?.length > 0 && tours.map((tour, index) => (
-              <Grid key={index} item xs={12} sm={6} md={4} lg={3}>
-                <SingleCard tour={tour} />
-              </Grid>
-            ))}
-          </Grid>
-         <Pagination variant='outlined' count={totalPages} page={parseInt(page)} onChange={handleChange} color="secondary" sx={{ mt: 5}} />
+         <Box paddingX={8} paddingY={5} sx={{ margin: "auto", background: `url(${whiteBg})`, backgroundPosition: "center", backgroundSize: "cover", minHeight: "100vh" }}>
+          { isLoading ? (
+            <Grid container spacing={4}>
+              {[...Array(8)].map((_, index) => (
+                <Grid key={index} item xs={12} sm={6} md={4} lg={3}>
+                  <Skeleton variant="rounded" width={250} height={350} sx={{ borderRadius: "25px" }} />
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <Grid container spacing={4}>
+              {tours?.length > 0 && tours.map((tour, index) => (
+                <Grid key={index} item xs={12} sm={6} md={4} lg={3}>
+                  <SingleCard tour={tour} />
+                </Grid>
+              ))}
+            </Grid>
+          )}
+         <Pagination shape='rounded' count={totalPages} page={parseInt(page)} onChange={handleChange} sx={{ mt: 5, '& .MuiPagination-ul' : { justifyContent: "flex-end"},  '& .Mui-selected' : { color: "#000", background: "#4db6ac !important"} }} />
         </Box>
         </>
       )}

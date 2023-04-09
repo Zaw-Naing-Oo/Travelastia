@@ -12,7 +12,7 @@ import AddTour from './pages/AddTour';
 import CssBaseline from "@mui/material/CssBaseline";
 import TourDetail from './pages/TourDetail';
 import Dashboard from './pages/Dashboard';
-import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import Error from './components/Error';
 
 
@@ -20,6 +20,7 @@ const App = () => {
 
   const user = JSON.parse(localStorage.getItem("profile"));
   const dispatch = useDispatch();
+  const location = useLocation();
 
   useEffect( () => {
     dispatch(setUser(user));
@@ -29,14 +30,14 @@ const App = () => {
     <>
     <CssBaseline />
     <ToastContainer />
-      <Navbar />
+     {location.pathname !== '/login' && location.pathname !== '/register' && <Navbar />}
       <Routes>
         <Route path='/' element = { <Navigate to='/tours' /> } />
         
         <Route path='/tours' element={ <Home /> }>
           <Route path='search' element={ <Home /> } />
         </Route>
-          <Route path='/tours/detail/:id' element={ <TourDetail /> } />
+        <Route path='/tours/detail/:id' element={ <TourDetail /> } />
         <Route path='/tours/createOrEdit/:id?' element={ <AddTour /> } />
         <Route path='tours/dashboard/:id' element={ <Dashboard /> } />
         <Route path='/login' element={ <Login /> } />
