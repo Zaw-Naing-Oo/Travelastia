@@ -70,7 +70,6 @@ const Dashboard = () => {
 
     const { isLoading, isError, data, error } = useQuery('dashboard', () => getToursByUserApi(userId));
     const userTours = data?.data?.userTours;
-    console.log(userTours)
 
 
     useEffect( () => {
@@ -92,7 +91,6 @@ const Dashboard = () => {
 
       { userTours?.length === 0 && (
         <Box sx={{
-          // height: "100vh",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",

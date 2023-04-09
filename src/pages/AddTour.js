@@ -60,7 +60,6 @@ import city from "../images/city.jpg"
     const onDrop = useCallback((acceptedFiles) => {
       const reader = new FileReader();
       reader.readAsDataURL(acceptedFiles[0]);
-      // console.log(acceptedFiles[0]);
       reader.onloadend = () => {
         setTourData({
           ...tourData,
@@ -70,7 +69,6 @@ import city from "../images/city.jpg"
         });
         setErrors((prevErrors) => ({ ...prevErrors, imageFile: null }));
       };
-      // console.log(reader);
     }, [tourData]);
 
     // query mutation

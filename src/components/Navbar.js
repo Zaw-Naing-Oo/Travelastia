@@ -77,14 +77,13 @@ function Navbar() {
     role="presentation"
     onClick={toggleDrawer(false)}
     onKeyDown={toggleDrawer(false)}
-    // sx={{ background: "#4db6ac"}}
   >
     { userId && <Typography component="h1" paddingX={5} paddingY={4} sx={{ fontSize: "25px", fontWeight: 600, fontStyle: "oblique", backgroundColor: "#00695c", color: "white"}}>{ user?.result?.name }</Typography> }
     <List>
         <ListItem className='d-block'>
           <ListItemButton 
              onClick={() => {
-                user ? navigate("/tours/createOrEdit") :
+              userId ? navigate("/tours/createOrEdit") :
                       navigate("/login");
               }}
           >
@@ -154,7 +153,6 @@ function Navbar() {
     color: 'inherit',
     '& .MuiInputBase-input': {
       padding: theme.spacing(1, 1, 1, 0),
-      // vertical padding + font size from searchIcon
       paddingLeft: `calc(1em + ${theme.spacing(4)})`,
       transition: theme.transitions.create('width'),
       width: '100%',

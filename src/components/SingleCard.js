@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import  Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardActions from '@mui/material/CardActions'
-import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Typography from '@mui/material/Typography'
 import { Buffer } from 'buffer'
@@ -25,11 +24,7 @@ const SingleCard = (props) => {
   const userId = useSelector(state => state?.auth?.user?.result?._id);
   const [isLiked, setIsLiked] = useState(Boolean(tour?.likes?.[userId]));
   const navigate = useNavigate();
-  // console.log(tour)
-  // console.log(isLiked)
 
-
-  // console.log(tour?.tags);
   const tag = tour?.tags.join(",").split(",").map( (tag,index) => (
     <Typography key={index} gutterBottom variant="body2" mr={1} sx={{ display: "flex"}}>
         { `${tag}`}
@@ -55,9 +50,6 @@ const SingleCard = (props) => {
             ...existingTour,
             likes: existingTour.likes.set(userId, true),
           }),
-        },
-        onSuccess: () => {
-          // The cache is already updated optimistically, so there's nothing to do here
         },
       }
     );
