@@ -74,7 +74,7 @@ const TourDetail = () => {
   }
 
   return (
-    <Box sx={{ background: "red", paddingY: 3, background: `url(${whiteBg})`, backgroundPosition: "center", backgroundSize: "cover",}}>
+    <Box sx={{ paddingY: 3, background: `url(${whiteBg})`, backgroundPosition: "center", backgroundSize: "cover",}}>
       <Breadcrumbs separator="›" aria-label="breadcrumb" sx={{ fontSize: 17 , marginLeft: isMobile ? '2rem' :'6rem', marginBottom: isMobile ? '1rem' : 0}}>
         <Link color="inherit" href='/' sx={{ textDecoration: "none", cursor: "pointer", '&:hover': { color: "#64ffda"},}} >
           Back
