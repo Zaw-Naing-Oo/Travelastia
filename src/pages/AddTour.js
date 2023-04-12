@@ -160,10 +160,10 @@ import city from "../images/city.jpg"
 
     // protection for not login
     useEffect( () => {
-      if(!user) {
+      if(!userId) {
         navigate("/login")
       }
-    }, [user])
+    }, [userId])
 
   
 
