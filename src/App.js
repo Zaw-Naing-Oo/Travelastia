@@ -17,7 +17,6 @@ import Error from './components/Error';
 
 
 const App = () => {
-  const [isLoading, setIsLoading] = useState(true); 
   const user = JSON.parse(localStorage.getItem("profile"));
   const dispatch = useDispatch();
   const location = useLocation();
@@ -26,28 +25,9 @@ const App = () => {
     dispatch(setUser(user));
   }, []);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000); // Adjust the delay time as needed
-
-    // Function to manually remove the timer
-    const removeTimer = () => {
-      clearTimeout(timer);
-      setIsLoading(false);
-    };
-
-    return removeTimer;
-  }, []);
-
-  
-  if (isLoading) {
-    return <div>Upgrading...</div>;
-  }
-
   return (
     <>
-    <CssBaseline />
+    {/* <CssBaseline />
     <ToastContainer />
      {location.pathname !== '/login' && location.pathname !== '/register' && <Navbar />}
       <Routes>
@@ -62,7 +42,8 @@ const App = () => {
         <Route path='/login' element={ <Login /> } />
         <Route path='/register' element={ <Register /> } />
         <Route path='*' element={ <Error /> } />
-      </Routes>
+      </Routes> */}
+      <h1>Upgrading...</h1>
     </>
   )
 }
