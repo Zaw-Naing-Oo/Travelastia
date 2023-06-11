@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ToastContainer } from "react-toastify"
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar'
@@ -17,7 +17,7 @@ import Error from './components/Error';
 
 
 const App = () => {
-
+  const [isLoading, setIsLoading] = useState(true); 
   const user = JSON.parse(localStorage.getItem("profile"));
   const dispatch = useDispatch();
   const location = useLocation();
@@ -25,6 +25,25 @@ const App = () => {
   useEffect( () => {
     dispatch(setUser(user));
   }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000); // Adjust the delay time as needed
+
+    // Function to manually remove the timer
+    const removeTimer = () => {
+      clearTimeout(timer);
+      setIsLoading(false);
+    };
+
+    return removeTimer;
+  }, []);
+
+  
+  if (isLoading) {
+    return <div>Upgrading...</div>;
+  }
 
   return (
     <>
