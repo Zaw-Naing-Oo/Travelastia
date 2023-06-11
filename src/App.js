@@ -27,7 +27,7 @@ const App = () => {
 
   return (
     <>
-    {/* <CssBaseline />
+    <CssBaseline />
     <ToastContainer />
      {location.pathname !== '/login' && location.pathname !== '/register' && <Navbar />}
       <Routes>
@@ -42,8 +42,8 @@ const App = () => {
         <Route path='/login' element={ <Login /> } />
         <Route path='/register' element={ <Register /> } />
         <Route path='*' element={ <Error /> } />
-      </Routes> */}
-      <h1>Upgrading...</h1>
+      </Routes>
+      {/* <h1>Upgrading...</h1> */}
     </>
   )
 }
